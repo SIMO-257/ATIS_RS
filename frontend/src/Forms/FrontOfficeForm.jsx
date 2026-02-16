@@ -53,7 +53,7 @@ const Etape_2_Form = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_URL}/api/cv/token/${token}`);
+        const response = await fetch(`${API_URL}/candidates/token/${token}`);
         const result = await response.json();
 
         if (result.success && result.data) {
@@ -250,7 +250,7 @@ const Etape_2_Form = () => {
         const fileFormData = new FormData();
         fileFormData.append("cv", cvFile);
 
-        const uploadResponse = await fetch(`${API_URL}/api/cv/upload-only-cv`, {
+        const uploadResponse = await fetch(`${API_URL}/candidates/upload-only-cv`, {
           method: "POST",
           body: fileFormData,
         });
@@ -275,7 +275,7 @@ const Etape_2_Form = () => {
       };
 
       // 3. Send data to /api/cv/:id (PUT request)
-      const updateResponse = await fetch(`${API_URL}/api/cv/${candidateId}`, {
+      const updateResponse = await fetch(`${API_URL}/candidates/${candidateId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -15,7 +15,7 @@ const CandidatsRefuses = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/cv`);
+      const response = await fetch(`${API_URL}/candidates`);
       const data = await response.json();
       if (data.success) {
         // Only show Refusé
@@ -33,7 +33,7 @@ const CandidatsRefuses = () => {
 
   const handleRestore = async (id) => {
     try {
-      await fetch(`${API_URL}/api/cv/${id}`, {
+      await fetch(`${API_URL}/candidates/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: "en Attente" }),

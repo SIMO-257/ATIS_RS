@@ -34,7 +34,7 @@ const Etape_2_Form = () => {
 
   const checkAccess = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/cv/token/${token}`);
+      const response = await fetch(`${API_URL}/candidates/token/${token}`);
       const data = await response.json();
 
       if (!data.success) {
@@ -72,8 +72,8 @@ const Etape_2_Form = () => {
 
     try {
       const endpoint = candidateId
-        ? `${API_URL}/api/cv/qualified/${candidateId}`
-        : `${API_URL}/api/cv/save`; // Fallback or general save
+        ? `${API_URL}/candidates/qualified/${candidateId}`
+        : `${API_URL}/candidates/save`; // Fallback or general save
 
       const method = candidateId ? "PATCH" : "POST";
 
@@ -153,7 +153,7 @@ const Etape_2_Form = () => {
                 API URL: <code>{API_URL}</code>
               </div>
               <div>
-                Full URL: <code>{`${API_URL}/api/cv/token/${token}`}</code>
+                Full URL: <code>{`${API_URL}/candidates/token/${token}`}</code>
               </div>
               <button
                 onClick={() => window.location.reload()}

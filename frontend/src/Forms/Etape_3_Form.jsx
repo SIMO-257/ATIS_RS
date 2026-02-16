@@ -22,7 +22,7 @@ const Etape_3_Form = () => {
 
   const checkAccess = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/cv/eval/token/${token}`);
+      const res = await fetch(`${API_URL}/candidates/eval/token/${token}`);
       const data = await res.json();
       if (data.success && data.data) {
         if (data.data.evalStatus === "active") {
@@ -61,7 +61,7 @@ const Etape_3_Form = () => {
     setLoading(true);
     try {
       const res = await fetch(
-        `${API_URL}/api/cv/eval/submit/${candidate._id}`,
+        `${API_URL}/candidates/eval/submit/${candidate._id}`,
         {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },

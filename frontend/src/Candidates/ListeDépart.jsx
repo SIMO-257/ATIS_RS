@@ -28,7 +28,7 @@ const ListeDépart = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/cv`);
+      const response = await fetch(`${API_URL}/candidates`);
       const data = await response.json();
       if (data.success) {
         // Filter: Only show Embaucé candidates with a dateDepart
@@ -49,7 +49,7 @@ const ListeDépart = () => {
   const handleUpdate = async (id, field, value) => {
     try {
       const _id = normalizeId(id);
-      await fetch(`${API_URL}/api/cv/${_id}`, {
+      await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [field]: value }),

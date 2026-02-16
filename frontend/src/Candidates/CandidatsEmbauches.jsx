@@ -45,7 +45,7 @@ const CandidatsEmbauches = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/cv`);
+      const response = await fetch(`${API_URL}/candidates`);
       const data = await response.json();
       if (data.success) {
         const allEmbaucheCandidates = data.data.filter(
@@ -73,7 +73,7 @@ const CandidatsEmbauches = () => {
   const handleUpdate = async (id, field, value) => {
     try {
       const _id = normalizeId(id);
-      await fetch(`${API_URL}/api/cv/${_id}`, {
+      await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [field]: value }),
@@ -92,7 +92,7 @@ const CandidatsEmbauches = () => {
   const handleActivateEval = async (id) => {
     try {
       const _id = normalizeId(id);
-      const res = await fetch(`${API_URL}/api/cv/${_id}`, {
+      const res = await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ evalStatus: "active" }),
@@ -138,7 +138,7 @@ const CandidatsEmbauches = () => {
     try {
       const _id = normalizeId(id);
       const response = await fetch(
-        `${API_URL}/api/cv/${_id}/upload-rapport-stage`,
+        `${API_URL}/candidates/${_id}/upload-rapport-stage`,
         {
           method: "POST",
           body: formData,
@@ -165,7 +165,7 @@ const CandidatsEmbauches = () => {
       "Préparation des documents pour le téléchargement. Cela peut prendre un moment...",
     );
     const _id = normalizeId(candidateId);
-    window.location.href = `${API_URL}/api/cv/${_id}/download-docs`;
+    window.location.href = `${API_URL}/candidates/${_id}/download-docs`;
   };
 
   if (loading) return <div className="loading-spinner">Loading...</div>;

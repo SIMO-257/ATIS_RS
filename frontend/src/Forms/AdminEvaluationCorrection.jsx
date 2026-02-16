@@ -59,7 +59,7 @@ const AdminEvaluationCorrection = () => {
 
   const fetchCandidate = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/cv/${id}`);
+      const res = await fetch(`${API_URL}/candidates/${id}`);
       const data = await res.json();
       if (data.success) {
         setCandidate(data.data);
@@ -101,7 +101,7 @@ const AdminEvaluationCorrection = () => {
       ).length;
       const score = trueCount; // Score is simply the count of true answers
 
-      const res = await fetch(`${API_URL}/api/cv/eval/correct/${id}`, {
+      const res = await fetch(`${API_URL}/candidates/eval/correct/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

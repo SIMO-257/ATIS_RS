@@ -45,7 +45,7 @@ const ChoisirBesoin = () => {
     setGeneratedLink(null); // Clear previous link
 
     try {
-      const response = await fetch(`${API_URL}/api/cv/generate-form-link`, {
+      const response = await fetch(`${API_URL}/forms/generate-form-link`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ service, questionnaire }),

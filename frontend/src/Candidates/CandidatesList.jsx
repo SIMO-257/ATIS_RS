@@ -28,7 +28,7 @@ const CandidatesList = () => {
 
   const fetchCandidates = async () => {
     try {
-      const response = await fetch(`${API_URL}/api/cv`);
+      const response = await fetch(`${API_URL}/candidates`);
       const data = await response.json();
       if (data.success) {
         setCandidates(data.data);
@@ -48,7 +48,7 @@ const CandidatesList = () => {
       return;
 
     try {
-      const response = await fetch(`${API_URL}/api/cv/${id}`, {
+      const response = await fetch(`${API_URL}/candidates/${id}`, {
         method: "DELETE",
       });
       const data = await response.json();
@@ -67,7 +67,7 @@ const CandidatesList = () => {
   const handleCommentChange = async (id, newComment) => {
     try {
       const _id = normalizeId(id);
-      await fetch(`${API_URL}/api/cv/${_id}`, {
+      await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ recruiterComment: newComment }),
@@ -119,7 +119,7 @@ const CandidatesList = () => {
   const handleStatusChange = async (id, newStatus) => {
     try {
       const _id = normalizeId(id);
-      await fetch(`${API_URL}/api/cv/${_id}`, {
+      await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status: newStatus }),
@@ -137,7 +137,7 @@ const CandidatesList = () => {
   const handleHiringStatusChange = async (id, newHiringStatus) => {
     try {
       const _id = normalizeId(id);
-      await fetch(`${API_URL}/api/cv/${_id}`, {
+      await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ hiringStatus: newHiringStatus }),

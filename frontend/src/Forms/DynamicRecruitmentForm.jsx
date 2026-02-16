@@ -105,7 +105,7 @@ const DynamicRecruitmentForm = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await fetch(`${API_URL}/api/cv/token/${token}`);
+        const response = await fetch(`${API_URL}/candidates/token/${token}`);
         const result = await response.json();
 
         if (result.success && result.data) {
@@ -300,7 +300,7 @@ const DynamicRecruitmentForm = () => {
       if (cvFile) {
         const fileFormData = new FormData();
         fileFormData.append("cv", cvFile);
-        const uploadResponse = await fetch(`${API_URL}/api/cv/upload-only-cv`, {
+        const uploadResponse = await fetch(`${API_URL}/candidates/upload-only-cv`, {
           method: "POST",
           body: fileFormData,
         });
@@ -310,7 +310,7 @@ const DynamicRecruitmentForm = () => {
         originalCvMinioPath = uploadResult.cvUrl || uploadResult.fileName;
       }
 
-      const response = await fetch(`${API_URL}/api/cv/${candidateId}`, {
+      const response = await fetch(`${API_URL}/candidates/${candidateId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

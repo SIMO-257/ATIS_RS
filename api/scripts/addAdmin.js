@@ -9,13 +9,13 @@ async function addAdmin() {
     const password = "adminpassword"; // Change this as needed
 
     console.log(`Checking if admin '${username}' already exists...`);
-    const existingAdmin = await db.collection("admin").findOne({ username });
+    const existingAdmin = await db.collection("admins").findOne({ username });
 
     if (existingAdmin) {
       console.log(`Admin user '${username}' already exists.`);
     } else {
       console.log(`Adding admin user '${username}'...`);
-      await db.collection("admin").insertOne({ username, password });
+      await db.collection("admins").insertOne({ username, password });
       console.log(`Admin user '${username}' added successfully!`);
     }
   } catch (error) {
