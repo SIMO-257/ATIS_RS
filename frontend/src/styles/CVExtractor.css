@@ -1,0 +1,563 @@
+.cv-extractor-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  width: 100%;
+  background: transparent;
+  font-family: Arial, sans-serif;
+  padding: 40px 20px;
+}
+
+.cv-extractor-card {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: transparent;
+  backdrop-filter: none;
+  border: none;
+  width: 100%;
+  max-width: 1200px;
+  overflow: visible;
+  box-shadow: none;
+}
+
+.cv-extractor-card.single-panel {
+  justify-content: center;
+  max-width: 600px;
+  padding: 40px;
+}
+
+.upload-panel,
+.form-panel {
+  flex: 1;
+  min-width: 300px;
+  padding: 30px;
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+}
+
+.upload-panel {
+  align-items: center;
+  text-align: center;
+  background-color: transparent;
+  border-right: none;
+}
+
+.cv-extractor-card.single-panel .upload-panel {
+  border-right: none;
+}
+
+.header {
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: #ffffff;
+  margin-bottom: 20px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.header p {
+  font-size: 1rem;
+  color: #a0aec0;
+}
+
+.error-message {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c00;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.upload-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 350px;
+}
+
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 20px;
+  border: 2px dashed #a0aec0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.file-upload-wrapper:hover {
+  border-color: #4c51bf;
+  background-color: #f7fafc;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #4c51bf;
+  color: white;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.file-label:hover {
+  background-color: #5a67d8;
+}
+
+.extract-button {
+  background-color: #38a169;
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.extract-button:hover:not(:disabled) {
+  background-color: #48bb78;
+}
+
+.extract-button:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+.spinner {
+  border: 2px solid #ddd;
+  border-top: 2px solid #fff;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  animation: spin 1s linear infinite;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.form-panel {
+  flex: 1;
+  background-color: transparent;
+  padding: 30px;
+}
+
+.form-panel .form-header {
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.form-panel .form-header h2 {
+  font-size: 1.8rem;
+  color: #ffffff;
+  margin-bottom: 8px;
+}
+
+.form-panel .form-subtitle {
+  font-size: 0.95rem;
+  color: #718096;
+}
+
+.cv-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #2d3748;
+}
+
+.required-badge {
+  background-color: #f56565;
+  color: white;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: normal;
+}
+
+.form-input {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  color: #2d3748;
+  background-color: #ffffff;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #4c51bf;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 30px;
+}
+
+.reset-button,
+.submit-button {
+  padding: 12px 25px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.reset-button {
+  background-color: #e2e8f0;
+  color: #2d3748;
+}
+
+.reset-button:hover:not(:disabled) {
+  background-color: #cbd5e0;
+}
+
+.submit-button {
+  background-color: #4c51bf;
+  color: white;
+}
+
+.submit-button:hover:not(:disabled) {
+  background-color: #5a67d8;
+}
+
+.reset-button:disabled,
+.submit-button:disabled {
+  background-color: #cbd5e0;
+  cursor: not-allowed;
+}
+
+/* Simple Table Styles */
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 4px;
+  margin: 20px 0;
+}
+
+.candidates-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: #ffffff;
+  color: #2d3748;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.candidates-table thead {
+  background-color: #f7fafc;
+  color: #2c5282;
+}
+
+.candidates-table th {
+  padding: 12px 15px;
+  text-align: left;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+  border-bottom: 2px solid #edf2f7;
+}
+
+.candidates-table td {
+  padding: 12px 15px;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.candidates-table tr:hover {
+  background-color: transparent;
+}
+
+.candidates-table tbody tr {
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.candidates-table tbody tr:hover {
+  background-color: #f7fafc;
+}
+
+.candidates-table td {
+  padding: 12px 15px;
+  vertical-align: middle;
+  color: #2d3748;
+  border-bottom: 1px solid #edf2f7;
+}
+
+.candidates-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Simple form elements in tables */
+.comment-input {
+  width: 100%;
+  min-width: 180px;
+  padding: 8px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.status-select {
+  padding: 6px 8px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  background-color: white;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.status-select:focus {
+  outline: none; /* Remove default focus outline */
+  border-color: #4299e1; /* Example blue border */
+  box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.5); /* Example blue shadow */
+  background-color: #e0f2f7; /* Light blue background on focus */
+}
+
+/* Specific styles for hiring status */
+.status-select.attente-validation-candidat {
+  background-color: #ffedd5; /* Light orange background */
+  color: #c05621; /* Dark orange text */
+  border-color: #fbd38d;
+}
+
+.status-select.embauce {
+  background-color: #d6f2c2; /* Light green background */
+  color: #2f855a; /* Dark green text */
+  border-color: #9ae6b4;
+}
+
+.status-select.non-embauche {
+  background-color: #fddede; /* Light red background */
+  color: #e53e3e; /* Dark red text */
+  border-color: #feb2b2;
+}
+
+/* Specific styles for general status */
+.status-select.en-attente {
+  background-color: #e0f2f7; /* Light blue background */
+  color: #2c5282; /* Dark blue text */
+  border-color: #a0d9f4;
+}
+
+.status-select.accepte {
+  background-color: #d6f2c2; /* Light green background */
+  color: #2f855a; /* Dark green text */
+  border-color: #9ae6b4;
+}
+
+.status-select.refuse {
+  background-color: #fddede; /* Light red background */
+  color: #e53e3e; /* Dark red text */
+  border-color: #feb2b2;
+}
+
+/* Ensure the styling applies to the selected option within the dropdown */
+.status-select option:checked {
+  background-color: var(
+    --selected-option-bg,
+    #4c51bf
+  ); /* Default blue for selected */
+  color: white;
+}
+
+.status-select.attente-validation-candidat option:checked {
+  background-color: #c05621;
+  color: white;
+}
+
+.status-select.embauce option:checked {
+  background-color: #2f855a;
+  color: white;
+}
+
+.status-select.non-embauche option:checked {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.status-select.en-attente option:checked {
+  background-color: #2c5282;
+  color: white;
+}
+
+.status-select.accepte option:checked {
+  background-color: #2f855a;
+  color: white;
+}
+
+.status-select.refuse option:checked {
+  background-color: #e53e3e;
+  color: white;
+}
+
+.download-link {
+  color: #4c51bf;
+  text-decoration: none;
+  padding: 4px 8px;
+  font-size: 0.85rem;
+}
+
+.download-link:hover {
+  text-decoration: underline;
+}
+
+.no-file {
+  color: #a0aec0;
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 4px;
+}
+
+.delete-btn:hover {
+  color: #e53e3e;
+}
+
+.candidates-table input[type="date"],
+.candidates-table input[type="text"] {
+  padding: 6px 8px;
+  border: 1px solid #cbd5e0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  background-color: white;
+}
+
+.candidates-table input[type="file"] {
+  font-size: 0.75rem;
+}
+
+.loading-spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem;
+  font-size: 1.1rem;
+  color: #4a5568;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .cv-extractor-card {
+    flex-direction: column;
+    max-width: 100%;
+  }
+  .upload-panel,
+  .form-panel {
+    border-right: none;
+    padding: 20px;
+  }
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .cv-extractor-card.single-panel {
+    padding: 20px;
+  }
+
+  .table-responsive {
+    font-size: 0.8rem;
+  }
+
+  .candidates-table th,
+  .candidates-table td {
+    padding: 8px 10px;
+  }
+}
+
+.generated-link-container {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.generated-link-container h3 {
+  margin: 0 0 15px 0;
+  color: #2d3748;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.generated-link-display {
+  background: #f7fafc;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  color: #4a5568;
+  font-size: 0.9rem;
+  word-break: break-all;
+  margin: 0 0 15px 0;
+  font-family: "Courier New", monospace;
+}
+
+.copy-button {
+  background-color: #4c51bf;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.copy-button:hover {
+  background-color: #5a67d8;
+}

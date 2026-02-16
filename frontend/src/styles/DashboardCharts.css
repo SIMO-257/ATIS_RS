@@ -1,0 +1,26 @@
+.dashboard-charts {
+  padding: 20px;
+  background-color: transparent;
+  border-radius: 8px;
+}
+
+.dashboard-charts h2 {
+  text-align: center;
+  color: #ffffff;
+  margin-bottom: 30px;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.chart-container {
+  margin-bottom: 40px;
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h3 {
+  text-align: center;
+  color: #333333;
+  margin-bottom: 20px;
+}

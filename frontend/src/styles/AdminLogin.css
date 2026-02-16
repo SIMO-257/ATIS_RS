@@ -1,0 +1,153 @@
+/* Simple Admin Login CSS */
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  width: 100%;
+  background: #1a202c;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px;
+  background: #2d3748; /* Darkened background */
+  border-radius: 8px;
+  padding: 40px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.login-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.admin-icon {
+  font-size: 40px;
+  margin-bottom: 15px;
+}
+
+.login-header h1 {
+  color: #ffffff;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  color: #cbd5e0;
+  font-size: 14px;
+}
+
+.login-error {
+  background: #fee;
+  border: 1px solid #fcc;
+  color: #c00;
+  padding: 12px;
+  border-radius: 4px;
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.login-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-group label {
+  color: #333;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.login-group input {
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 12px;
+  color: #333;
+  font-size: 14px;
+  width: 100%; /* Ensure inputs take full width */
+}
+
+.login-group input::placeholder {
+  color: #a0aec0; /* Consistent placeholder color */
+}
+
+.login-group input:focus {
+  outline: 2px solid #3182ce; /* Custom focus style for accessibility */
+  border-color: transparent; /* Remove default border color on focus */
+}
+
+.login-btn {
+  background: #3182ce;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  /* margin-top: 10px; Removed, relying on form's gap */
+}
+
+.login-btn:hover:not(:disabled) {
+  background: #2c5282;
+}
+
+.login-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.login-footer {
+  margin-top: 30px;
+  text-align: center;
+}
+
+.back-to-site {
+  background: transparent;
+  border: none;
+  color: #666;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.back-to-site:hover {
+  color: #333;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #ddd;
+  border-top-color: #3182ce;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
