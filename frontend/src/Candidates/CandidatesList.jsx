@@ -393,6 +393,7 @@ const CandidatesList = () => {
                                 ? "#48bb78"
                                 : "",
                           }}
+                          disabled={candidate.formStatus === "active"}
                         >
                           {candidate.formStatus === "active"
                             ? "✅ Activé"

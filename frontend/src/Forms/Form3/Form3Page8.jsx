@@ -25,7 +25,7 @@ const Form3Page8 = ({ answers, onAnswer }) => {
       text:
         "9. Pour éviter tout malentendu lié aux absences ou retards, il faut :",
       options: [
-        "A. Communiquer rapidement et précis",
+        "A. Communiquer rapidement et par écrit",
         "B. Anticiper et informer à l'avance si possible",
         "C. Respecter strictement la procédure interne",
         "D. Toutes les réponses",

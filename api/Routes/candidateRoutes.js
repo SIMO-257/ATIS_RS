@@ -4,6 +4,8 @@ const { getDB } = require("../db");
 const { ObjectId } = require("mongodb");
 const path = require("path");
 const { Client } = require("minio");
+const PDFDocument = require("pdfkit");
+const { PassThrough } = require("stream");
 const fs = require("fs");
 const archiver = require("archiver");
 const { pipeline } = require("stream/promises"); // For efficient streaming
@@ -13,25 +15,62 @@ const crypto = require("crypto"); // Needed for candidate update (generating tok
 
 // Helper function to download file from MinIO
 async function downloadFileFromMinio(bucketName, objectName, outputPath) {
-  try {
-    // Check if the object exists before trying to get it
-    await minioClient.statObject(bucketName, objectName);
-    const stream = await minioClient.getObject(bucketName, objectName);
-    const fileStream = fs.createWriteStream(outputPath);
-    await pipeline(stream, fileStream);
-    console.log(`Downloaded ${objectName} from ${bucketName} to ${outputPath}`);
-    return true;
-  } catch (err) {
-    if (err.code === "NotFound") {
-      console.warn(`MinIO object not found: ${bucketName}/${objectName}`);
-    } else {
+  const candidates = [];
+  if (objectName) candidates.push(objectName);
+  if (objectName && objectName.includes(" ")) {
+    candidates.push(encodeURIComponent(objectName));
+  }
+  if (objectName && objectName.includes("%")) {
+    try {
+      candidates.push(decodeURIComponent(objectName));
+    } catch {
+      // ignore decode errors
+    }
+  }
+
+  const tried = new Set();
+  for (const name of candidates) {
+    if (!name || tried.has(name)) continue;
+    tried.add(name);
+    try {
+      await minioClient.statObject(bucketName, name);
+      const stream = await minioClient.getObject(bucketName, name);
+      const fileStream = fs.createWriteStream(outputPath);
+      await pipeline(stream, fileStream);
+      console.log(`Downloaded ${name} from ${bucketName} to ${outputPath}`);
+      return true;
+    } catch (err) {
+      if (err.code === "NotFound") {
+        console.warn(`MinIO object not found: ${bucketName}/${name}`);
+        continue;
+      }
       console.error(
-        `Error downloading ${bucketName}/${objectName} from MinIO:`,
+        `Error downloading ${bucketName}/${name} from MinIO:`,
         err,
       );
+      return false;
     }
-    return false;
   }
+  return false;
+}
+
+function parseMinioLocation(value, defaultBucket) {
+  if (!value) return null;
+  try {
+    if (typeof value === "string" && value.startsWith("http")) {
+      const url = new URL(value);
+      const parts = url.pathname.split("/").filter((p) => p);
+      if (parts.length >= 2) {
+        return { bucket: parts[0], objectName: parts.slice(1).join("/") };
+      }
+      if (parts.length === 1) {
+        return { bucket: defaultBucket, objectName: parts[0] };
+      }
+    }
+  } catch {
+    // fall through to treat as objectName
+  }
+  return { bucket: defaultBucket, objectName: value };
 }
 
 // MinIO Client
@@ -345,26 +384,171 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// PUT /eval/submit/:id - Submit evaluation for a candidate
+const EVAL_ANSWER_KEY = {
+  q1: "B",
+  q2: "B",
+  q3: "B",
+  q4: "B",
+  q5: "A",
+  q6: "B",
+  q7: "A",
+  q8: "D",
+  q9: "B",
+  q10: "B",
+  q11: "B",
+  q12: "A",
+  q13: "D",
+  q14: "A",
+  q15: "A",
+  q16: "B",
+  q17: "C",
+  q18: "B",
+  q19: "B",
+  q20: "B",
+  q21: "B",
+  q22: "B",
+  q23: "B",
+  q24: "D",
+  q25: "B",
+  q26: "A",
+  q27: "B",
+  q28: "A",
+  q29: "D",
+  q30: "A",
+  q31: "A",
+  q32: "A",
+  q33: "D",
+  q34: "D",
+  q35: "A",
+  q36: "A",
+  q37: "D",
+  q38: "B",
+  q39: "A",
+  q40: "A",
+  q41: "B",
+  q42: "A",
+  q43: "A",
+  q44: "A",
+  q45: "A",
+  q46: "C",
+  q47: "C",
+};
+
+const EVAL_QUESTION_ORDER = Object.keys(EVAL_ANSWER_KEY);
+
+const normalizeAnswer = (value) => {
+  if (!value) return null;
+  if (typeof value !== "string") return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const match = trimmed.match(/^([A-Da-d])/);
+  if (match) return match[1].toUpperCase();
+  const parenMatch = trimmed.match(/^([a-d])\)/i);
+  if (parenMatch) return parenMatch[1].toUpperCase();
+  return null;
+};
+
+// PUT /eval/submit/:id - Submit evaluation for a candidate (auto-corrected)
 router.put("/eval/submit/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { evaluation, score } = req.body;
+    const answers = req.body || {};
     const db = getDB();
 
     if (!ObjectId.isValid(id)) {
       return res.status(400).json({ success: false, error: "Invalid ID" });
     }
 
+    const candidate = await db
+      .collection("candidats")
+      .findOne({ _id: new ObjectId(id) });
+    if (!candidate) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found" });
+    }
+
+    const evalCorrection = {};
+    let correctCount = 0;
+    EVAL_QUESTION_ORDER.forEach((qId) => {
+      const expected = EVAL_ANSWER_KEY[qId];
+      const given = normalizeAnswer(answers[qId]);
+      const isCorrect = given === expected;
+      evalCorrection[qId] = isCorrect;
+      if (isCorrect) correctCount += 1;
+    });
+
+    const doc = new PDFDocument({ margin: 50 });
+    const stream = new PassThrough();
+    doc.pipe(stream);
+
+    doc
+      .fontSize(20)
+      .text("Évaluation Corrigée - Form3", { align: "center" });
+    doc.moveDown();
+    doc
+      .fontSize(12)
+      .text(
+        `Candidat : ${(candidate["Prénom"] || candidate["Pr\u00E9nom"] || "").toString()} ${candidate.Nom || ""}`,
+      );
+    doc.text(`Note Finale : ${correctCount}/${EVAL_QUESTION_ORDER.length}`);
+    doc.moveDown();
+
+    EVAL_QUESTION_ORDER.forEach((qId) => {
+      const expected = EVAL_ANSWER_KEY[qId];
+      const givenRaw = answers[qId];
+      const given = normalizeAnswer(givenRaw);
+      const isCorrect = evalCorrection[qId];
+
+      doc.fontSize(10).fillColor("#2d3748").text(`${qId.toUpperCase()}`);
+      doc
+        .fillColor("#4a5568")
+        .text(`Réponse : ${given || "N/A"} (${givenRaw || "N/A"})`);
+      doc
+        .fillColor(isCorrect ? "#38a169" : "#e53e3e")
+        .text(`Correction : ${isCorrect ? "VRAI" : "FAUX"} | Attendu : ${expected}`);
+      doc.moveDown(0.4);
+    });
+
+    doc.end();
+
+    const fileName = `eval-${candidate.Nom || "candidat"}-${Date.now()}.pdf`;
+    const chunks = [];
+    stream.on("data", (c) => chunks.push(c));
+
+    await new Promise((resolve, reject) => {
+      stream.on("end", async () => {
+        try {
+          const buffer = Buffer.concat(chunks);
+          await minioClient.putObject(
+            FORM3_BUCKET,
+            fileName,
+            buffer,
+            buffer.length,
+            { "Content-Type": "application/pdf" },
+          );
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      });
+      stream.on("error", reject);
+    });
+
+    const pdfUrl = `${process.env.MINIO_PUBLIC_URL}/${FORM3_BUCKET}/${fileName}`;
+
     const result = await db.collection("candidats").updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
-          evaluation,
-          evaluationScore: score,
-          evaluationDate: new Date(),
+          evalAnswers: answers,
+          evalCorrection,
+          evalScore: correctCount,
+          evalStatus: "corrected",
+          evalPdfPath: pdfUrl,
+          evalSubmittedAt: new Date(),
         },
-      }
+      },
     );
 
     if (result.matchedCount === 0) {
@@ -373,7 +557,12 @@ router.put("/eval/submit/:id", async (req, res) => {
         .json({ success: false, error: "Candidate not found" });
     }
 
-    res.json({ success: true, message: "Evaluation submitted successfully" });
+    res.json({
+      success: true,
+      message: "Evaluation submitted and corrected successfully",
+      evalScore: correctCount,
+      evalPdfPath: pdfUrl,
+    });
   } catch (error) {
     console.error("Evaluation submit error:", error);
     res
@@ -586,28 +775,25 @@ router.get("/:id/download-docs", async (req, res) => {
     console.log(`[Download] cvUrl:`, candidate.cvUrl);
 
     console.log(`[Download Debug] Raw CV paths from candidate: originalCvMinioPath=${candidate.originalCvMinioPath}, cvPath=${candidate.cvPath}, cvUrl=${candidate.cvUrl}, cvFileName=${candidate.cvFileName}`);
-    const cvPath = candidate.originalCvMinioPath || candidate.cvPath || candidate.cvUrl || candidate.cvFileName;
+    const cvPath =
+      candidate.originalCvMinioPath ||
+      candidate.cvPath ||
+      candidate.cvUrl ||
+      candidate.cvFileName;
     if (cvPath) {
       console.log(`[Download Debug] Selected cvPath for download: ${cvPath}`);
       try {
-        let bucketFromUrl, objectName;
-        
-        if (cvPath.startsWith("http")) {
-          const url = new URL(cvPath);
-          const pathParts = url.pathname.split("/").filter(p => p);
-          bucketFromUrl = pathParts[0];
-          objectName = pathParts.slice(1).join("/");
-        } else {
-          objectName = cvPath;
-          bucketFromUrl = CV_BUCKET;
+        const parsed = parseMinioLocation(cvPath, CV_BUCKET);
+        if (parsed && parsed.objectName) {
+          console.log(
+            `[Download Debug] CV: extracted bucket: ${parsed.bucket}, objectName: ${parsed.objectName}`,
+          );
+          documentsToDownload.push({
+            bucket: parsed.bucket || CV_BUCKET,
+            objectName: parsed.objectName,
+            fileName: `${candidateName}_CV_Original${path.extname(parsed.objectName) || ".pdf"}`,
+          });
         }
-        
-        console.log(`[Download Debug] CV: extracted bucket: ${bucketFromUrl}, objectName: ${objectName}`);
-        documentsToDownload.push({
-          bucket: bucketFromUrl || CV_BUCKET,
-          objectName: objectName,
-          fileName: `${candidateName}_CV_Original${path.extname(objectName) || ".pdf"}`,
-        });
       } catch (err) {
         console.error(`[Download] Error parsing CV path: ${err.message}`);
       }
@@ -616,39 +802,43 @@ router.get("/:id/download-docs", async (req, res) => {
     if (candidate.qualifiedFormPath) {
       console.log(`[Download Debug] qualifiedFormPath from DB: ${candidate.qualifiedFormPath}`);
       try {
-        const url = new URL(candidate.qualifiedFormPath);
-        const objectName = url.pathname.split("/").slice(2).join("/");
-        const bucketName = FORM2_BUCKET; // Explicitly set
-        console.log(`[Download Debug] Constructed Bucket: ${bucketName}, Object Name: ${objectName}`);
-        documentsToDownload.push({
-          bucket: FORM2_BUCKET,
-          objectName: objectName,
-          fileName: `${candidateName}_Questionnaire_Recrutement.pdf`,
-        });
+        const parsed = parseMinioLocation(candidate.qualifiedFormPath, FORM2_BUCKET);
+        if (parsed && parsed.objectName) {
+          console.log(
+            `[Download Debug] Form2: bucket: ${parsed.bucket}, objectName: ${parsed.objectName}`,
+          );
+          documentsToDownload.push({
+            bucket: parsed.bucket || FORM2_BUCKET,
+            objectName: parsed.objectName,
+            fileName: `${candidateName}_Questionnaire_Recrutement.pdf`,
+          });
+        }
       } catch (e) {
         console.error(`[Download Debug] Error parsing qualifiedFormPath URL: ${e.message}`);
       }
     }
 
     if (candidate.evalPdfPath) {
-      const url = new URL(candidate.evalPdfPath);
-      const objectName = url.pathname.split("/").slice(2).join("/");
-      documentsToDownload.push({
-        bucket: FORM3_BUCKET,
-        objectName: objectName,
-        fileName: `${candidateName}_Evaluation_Corrigee.pdf`,
-      });
+      const parsed = parseMinioLocation(candidate.evalPdfPath, FORM3_BUCKET);
+      if (parsed && parsed.objectName) {
+        documentsToDownload.push({
+          bucket: parsed.bucket || FORM3_BUCKET,
+          objectName: parsed.objectName,
+          fileName: `${candidateName}_Evaluation_Corrigee.pdf`,
+        });
+      }
     }
 
     if (candidate.rapportStagePath) {
-      const url = new URL(candidate.rapportStagePath);
-      const objectName = url.pathname.split("/").slice(2).join("/");
-      const ext = path.extname(objectName) || ".pdf";
-      documentsToDownload.push({
-        bucket: RAPPORT_BUCKET,
-        objectName: objectName,
-        fileName: `${candidateName}_Rapport_Stage${ext}`,
-      });
+      const parsed = parseMinioLocation(candidate.rapportStagePath, RAPPORT_BUCKET);
+      if (parsed && parsed.objectName) {
+        const ext = path.extname(parsed.objectName) || ".pdf";
+        documentsToDownload.push({
+          bucket: parsed.bucket || RAPPORT_BUCKET,
+          objectName: parsed.objectName,
+          fileName: `${candidateName}_Rapport_Stage${ext}`,
+        });
+      }
     }
 
     console.log(

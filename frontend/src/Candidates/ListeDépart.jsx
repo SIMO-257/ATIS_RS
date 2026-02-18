@@ -31,7 +31,6 @@ const ListeDépart = () => {
       const response = await fetch(`${API_URL}/candidates`);
       const data = await response.json();
       if (data.success) {
-        // Filter: Only show Embaucé candidates with a dateDepart
         setCandidates(
           data.data.filter((c) => c.hiringStatus === "Embaucé" && c.dateDepart),
         );
@@ -54,7 +53,6 @@ const ListeDépart = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ [field]: value }),
       });
-      // Update local state - re-fetch candidates to ensure data consistency
       fetchCandidates();
     } catch (err) {
       console.error(`Failed to update ${field}`, err);
@@ -81,6 +79,7 @@ const ListeDépart = () => {
               <tr>
                 <th>Nom</th>
                 <th>Prénom</th>
+                <th>Cause</th>
                 <th>Date d'embauche</th>
                 <th>Date de départ</th>
               </tr>
@@ -89,7 +88,7 @@ const ListeDépart = () => {
               {candidates.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="4"
+                    colSpan="5"
                     style={{ textAlign: "center", padding: "2rem" }}
                   >
                     Aucun candidat n'est parti.
@@ -102,6 +101,7 @@ const ListeDépart = () => {
                     <td style={{ fontWeight: 600 }}>
                       {candidate["Prénom"] || "-"}
                     </td>
+                    <td>{candidate.causeDepart || "-"}</td>
                     <td>{candidate["Date d'embauche"] || "-"}</td>
                     <td>{candidate.dateDepart || "-"}</td>
                   </tr>

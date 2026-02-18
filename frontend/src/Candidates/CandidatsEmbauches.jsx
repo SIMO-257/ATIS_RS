@@ -155,7 +155,7 @@ const CandidatsEmbauches = () => {
     try {
       const _id = normalizeId(id);
       const response = await fetch(
-        `${API_URL}/candidates/${_id}/upload-rapport-stage`,
+        `${API_URL}/hiring/${_id}/upload-rapport-stage`,
         {
           method: "POST",
           body: formData,
@@ -211,12 +211,13 @@ const CandidatsEmbauches = () => {
                 <th>Service</th>
                 <th>Date de formation</th>
                 <th>Date d'évaluation</th>
-                <th>Statut final</th>
                 <th>Évaluation</th>
+                <th>Statut final</th>
                 <th>Score</th>
-                <th>PDF</th>
+                <th>Form_3</th>
                 <th>Rapport Stage</th>
                 <th>Date de départ</th>
+                <th>Cause</th>
                 <th>Documents</th>
               </tr>
             </thead>
@@ -224,7 +225,7 @@ const CandidatsEmbauches = () => {
               {candidates.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="14"
+                    colSpan="15"
                     style={{ textAlign: "center", padding: "2rem" }}
                   >
                     Aucun candidat embauché
@@ -331,31 +332,6 @@ const CandidatsEmbauches = () => {
                         }
                       />
                     </td>
-                    <td>
-                      <select
-                        className={`status-select final-status-select ${candidate.hiringFinalStatus?.toLowerCase().replaceAll(" ", "-")}`}
-                        style={{
-                          padding: "5px",
-                          fontSize: "0.85rem",
-                          width: "100%",
-                          minWidth: "180px",
-                        }}
-                        value={candidate.hiringFinalStatus || ""}
-                        onChange={(e) =>
-                          handleUpdate(
-                            candidate._id,
-                            "hiringFinalStatus",
-                            e.target.value,
-                          )
-                        }
-                      >
-                        <option value="">Sélectionner...</option>
-                        <option value="Accepté">Accepté</option>
-                        <option value="Prolongé la formation">
-                          Prolongé la formation
-                        </option>
-                      </select>
-                    </td>
                     {/* Évaluation column */}
                     <td>
                       {candidate.evalStatus === "submitted" ? (
@@ -386,12 +362,38 @@ const CandidatsEmbauches = () => {
                                 ? "#48bb78"
                                 : "",
                           }}
+                          disabled={candidate.evalStatus === "active"}
                         >
                           {candidate.evalStatus === "active"
                             ? "✅ Lien actif"
                             : "📋 Activer"}
                         </button>
                       )}
+                    </td>
+                    <td>
+                      <select
+                        className={`status-select final-status-select ${candidate.hiringFinalStatus?.toLowerCase().replaceAll(" ", "-")}`}
+                        style={{
+                          padding: "5px",
+                          fontSize: "0.85rem",
+                          width: "100%",
+                          minWidth: "180px",
+                        }}
+                        value={candidate.hiringFinalStatus || ""}
+                        onChange={(e) =>
+                          handleUpdate(
+                            candidate._id,
+                            "hiringFinalStatus",
+                            e.target.value,
+                          )
+                        }
+                      >
+                        <option value="">Sélectionner...</option>
+                        <option value="Accepté">Accepté</option>
+                        <option value="Prolongé la formation">
+                          Prolongé la formation
+                        </option>
+                      </select>
                     </td>
                     {/* Score column */}
                     <td style={{ fontWeight: 600, textAlign: "center" }}>
@@ -447,6 +449,21 @@ const CandidatsEmbauches = () => {
                             e.target.value,
                           )
                         }
+                      />
+                    </td>
+                    <td>
+                      <textarea
+                        className="comment-input"
+                        rows="2"
+                        defaultValue={candidate.causeDepart || ""}
+                        onBlur={(e) =>
+                          handleUpdate(
+                            candidate._id,
+                            "causeDepart",
+                            e.target.value,
+                          )
+                        }
+                        placeholder="Cause..."
                       />
                     </td>
                     <td>
