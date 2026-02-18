@@ -13,44 +13,53 @@ const AdminEvaluationCorrection = () => {
   const [corrections, setCorrections] = useState({});
 
   const QUESTIONS = [
-    { id: "q1", text: "1. Rôle principal d’un chargé d’étude ?" },
-    { id: "q2", text: "2. Erreurs critiques à éviter ?" },
+    { id: "q1", text: "1. Rôle principal d'un chargé d'étude ?" },
+    { id: "q2", text: "2. Erreur critique lors d'une offre ?" },
     { id: "q3", text: "3. Comparaison fiche technique / offre fournisseur ?" },
     { id: "q4", text: "4. Inclusion des accessoires ?" },
-    { id: "q5", text: "5. Vérifications avant envoi ?" },
-    { id: "q6", text: "6. Exemple de non-conformité ?" },
+    { id: "q5", text: "5. Vérifications avant envoi d'offre ?" },
+    { id: "q6", text: "6. Non-conformité possible ?" },
     { id: "q7", text: "7. Risque WhatsApp ?" },
-    { id: "q8", text: "8. Frais supplémentaires ?" },
-    { id: "q9", text: "9. Conformité normes (ATEX, UL, etc.) ?" },
-    { id: "q10", text: "10. Demande incomplète ?" },
+    { id: "q8", text: "8. Frais supplémentaires à anticiper ?" },
+    { id: "q9", text: "9. Conformité aux normes ?" },
+    { id: "q10", text: "10. Demande client incomplète ?" },
     { id: "q11", text: "11. Doute technique ?" },
-    { id: "q12", text: "12. Première info à identifier ?" },
-    { id: "q13", text: "13. Étape après l'origine ?" },
-    { id: "q14", text: "14. Cas UK/UK/ATIS ?" },
-    { id: "q15", text: "15. Cas UK/UE/ATIS ?" },
-    { id: "q16", text: "16. Cas UK/UE/Eurodistech ?" },
-    { id: "q17", text: "17. Cas USA/UE ?" },
-    { id: "q18", text: "18. Fournisseur différent du pays d'origine ?" },
-    { id: "q19", text: "19. Prévenir RH ?" },
-    { id: "q20", text: "20. Horaires officiels ?" },
-    { id: "q21", text: "21. Absence urgente ?" },
-    { id: "q22", text: "22. Certificat médical refusé ?" },
-    { id: "q23", text: "23. Conséquences retard ?" },
-    { id: "q24", text: "24. Absence non justifiée ?" },
-    { id: "q25", text: "25. Compréhension règles RH ?" },
-    { id: "q26", text: "26. Points flous internes ?" },
-    { id: "q27", text: "27. Plan anti-malentendu ?" },
-    { id: "q28", text: "28. Erreur collègue ?" },
-    { id: "q29", text: "29. Tâche secondaire ?" },
-    { id: "q30", text: "30. Désaccord chef ?" },
-    { id: "q31", text: "31. Perturbation concentration ?" },
-    { id: "q32", text: "32. Respect Open Space ?" },
-    { id: "q33", text: "33. Difficulté 2 premières semaines ?" },
-    { id: "q34", text: "34. Compétences renforcées ?" },
-    { id: "q35", text: "35. Produits/Demandes complexes ?" },
-    { id: "q36", text: "36. Bonnes pratiques ?" },
-    { id: "q37", text: "37. Conseil futur recrue ?" },
-    { id: "q38", text: "38. Points d'amélioration ?" },
+    { id: "q12", text: "12. Difficulté en début de poste ?" },
+    { id: "q13", text: "13. Compétence renforcée ?" },
+    { id: "q14", text: "14. Produit complexe ?" },
+    { id: "q15", text: "15. Bonne pratique à garder ?" },
+    { id: "q16", text: "16. Pour progresser il faut ?" },
+    { id: "q17", text: "17. Première info à identifier ?" },
+    { id: "q18", text: "18. Étape après l'origine ?" },
+    { id: "q19", text: "19. Cas UK/UK/ATIS ?" },
+    { id: "q20", text: "20. Cas UK/UE/ATIS ?" },
+    { id: "q21", text: "21. Cas UK/UE/Eurodistech ?" },
+    { id: "q22", text: "22. Cas USA/UE ?" },
+    { id: "q23", text: "23. Fournisseur différent du pays d'origine ?" },
+    { id: "q24", text: "24. Prévenir RH en cas de ?" },
+    { id: "q25", text: "25. Absence urgente ?" },
+    { id: "q26", text: "26. Certificat médical non validé ?" },
+    { id: "q27", text: "27. Retard répété ?" },
+    { id: "q28", text: "28. Absence sans justificatif ?" },
+    { id: "q29", text: "29. Situations prévenir RH ?" },
+    { id: "q30", text: "30. Horaires officiels ?" },
+    { id: "q31", text: "31. Absence motif urgent ?" },
+    { id: "q32", text: "32. Certificat médical non validé médecin ?" },
+    { id: "q33", text: "33. Conséquences retard répété ?" },
+    { id: "q34", text: "34. Absence sans justificatif valable ?" },
+    { id: "q35", text: "35. Importance règles RH ?" },
+    { id: "q36", text: "36. Point règlement pas clair ?" },
+    { id: "q37", text: "37. Éviter malentendus absences/retards ?" },
+    { id: "q38", text: "38. Erreur collègue ?" },
+    { id: "q39", text: "39. Tâche jugée secondaire ?" },
+    { id: "q40", text: "40. Désaccord chef de service ?" },
+    { id: "q41", text: "41. Collègue parle de façon inappropriée ?" },
+    { id: "q42", text: "42. Respect hiérarchie ?" },
+    { id: "q43", text: "43. Collègue parle trop fort ?" },
+    { id: "q44", text: "44. Deux collègues bruyants ?" },
+    { id: "q45", text: "45. Conflit entre collègues en open space ?" },
+    { id: "q46", text: "46. Respect en open space ?" },
+    { id: "q47", text: "47. Appel professionnel important ?" },
   ];
 
   useEffect(() => {
@@ -63,7 +72,6 @@ const AdminEvaluationCorrection = () => {
       const data = await res.json();
       if (data.success) {
         setCandidate(data.data);
-        // Initialize corrections either from existing evalCorrection or with nulls
         const initial = {};
         QUESTIONS.forEach((q) => {
           if (data.data.evalCorrection && q.id in data.data.evalCorrection) {
@@ -99,7 +107,7 @@ const AdminEvaluationCorrection = () => {
       const trueCount = Object.values(corrections).filter(
         (v) => v === true,
       ).length;
-      const score = trueCount; // Score is simply the count of true answers
+      const score = trueCount;
 
       const res = await fetch(`${API_URL}/candidates/eval/correct/${id}`, {
         method: "PATCH",

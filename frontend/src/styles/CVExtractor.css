@@ -518,6 +518,57 @@
   }
 }
 
+@media (max-width: 480px) {
+  .cv-extractor-container {
+    padding: 20px 12px;
+  }
+
+  .cv-extractor-card.single-panel {
+    padding: 16px;
+  }
+
+  .upload-panel,
+  .form-panel {
+    padding: 16px;
+  }
+
+  .form-panel .form-header h2 {
+    font-size: 1.4rem;
+  }
+
+  .cv-form {
+    gap: 16px;
+  }
+
+  .form-input {
+    padding: 12px 10px;
+    font-size: 1rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-top: 20px;
+  }
+
+  .reset-button,
+  .submit-button,
+  .copy-button {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 1rem;
+  }
+
+  .generated-link-container {
+    padding: 16px;
+  }
+
+  .generated-link-display {
+    font-size: 0.85rem;
+  }
+}
+
 .generated-link-container {
   margin-bottom: 2rem;
   padding: 1.5rem;

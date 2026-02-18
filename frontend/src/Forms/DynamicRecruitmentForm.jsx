@@ -300,7 +300,7 @@ const DynamicRecruitmentForm = () => {
       if (cvFile) {
         const fileFormData = new FormData();
         fileFormData.append("cv", cvFile);
-        const uploadResponse = await fetch(`${API_URL}/candidates/upload-only-cv`, {
+        const uploadResponse = await fetch(`${API_URL}/extract/upload-only-cv`, {
           method: "POST",
           body: fileFormData,
         });

@@ -10,7 +10,7 @@ services:
       minio:
         condition: service_healthy
     ports:
-      - "5000:5000"
+      - "0.0.0.0:5000:5000"
     environment:
       - MONGODB_URI=mongodb://mongodb:27017/cv_analysis
       - OLLAMA_HOST=http://ollama:11434
@@ -29,9 +29,7 @@ services:
     build:
       context: ./frontend
     ports:
-      - "5173:5173"
-
-
+      - "0.0.0.0:5173:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -86,6 +84,12 @@ services:
         sleep 5
         ollama pull qwen2.5:latest
         wait
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    command: tunnel --no-autoupdate --url http://frontend:5173
+    restart: unless-stopped
+    networks:
+      - app-network
 
 volumes:
   mongodb_data:

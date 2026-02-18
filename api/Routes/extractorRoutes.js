@@ -306,6 +306,7 @@ router.post("/extract", uploadCv.single("cv"), async (req, res) => {
     console.log("🤖 Calling Ollama...");
     const extractedData = await extractWithOllama(pdfText);
 
+    console.log("🔗 MINIO_PUBLIC_URL:", process.env.MINIO_PUBLIC_URL);
     const cvUrl = `${process.env.MINIO_PUBLIC_URL}/${CV_BUCKET}/${fileName}`;
     res.json({
       success: true,

@@ -5,7 +5,7 @@ import { API_URL } from "./config";
 async function displayAdmins() {
   console.log("Fetching admin users...");
   try {
-    const response = await fetch(`${API_URL}/api/auth/admins`);
+    const response = await fetch(`${API_URL}/auth/admins`);
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }

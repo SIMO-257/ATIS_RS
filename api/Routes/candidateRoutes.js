@@ -94,6 +94,103 @@ BUCKETS.forEach((bucket) => {
   });
 });
 
+// POST /:id/upload-rapport-stage - Upload stage rapport
+router.post("/:id/upload-rapport-stage", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: "Invalid ID" });
+    }
+
+    res.json({ success: true, message: "Stage rapport upload endpoint - implement as needed" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to upload rapport" });
+  }
+});
+
+// PUT /eval/correct/:id - Correct evaluation
+router.put("/eval/correct/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { correction, score } = req.body;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: "Invalid ID" });
+    }
+
+    const result = await db.collection("candidats").updateOne(
+      { _id: new ObjectId(id) },
+      { $set: { evalCorrection: correction, evalScore: score, evalCorrectionDate: new Date() } }
+    );
+
+    if (result.matchedCount === 0) {
+      return res.status(404).json({ success: false, error: "Candidate not found" });
+    }
+
+    res.json({ success: true, message: "Evaluation corrected successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to correct evaluation" });
+  }
+});
+
+
+// POST /:id/upload-rapport-stage - Upload stage rapport
+router.post("/:id/upload-rapport-stage", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: "Invalid ID" });
+    }
+
+    // This is a placeholder - implement actual file upload logic
+    res.json({ success: true, message: "Stage rapport upload endpoint - implement as needed" });
+  } catch (error) {
+    res.status(500).json({ success: false, error: "Failed to upload rapport" });
+  }
+});
+
+// PUT /eval/correct/:id - Correct evaluation
+router.put("/eval/correct/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { correction, score } = req.body;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: "Invalid ID" });
+    }
+
+    const result = await db.collection("candidats").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          evalCorrection: correction,
+          evalScore: score,
+          evalCorrectionDate: new Date(),
+        },
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found" });
+    }
+
+    res.json({ success: true, message: "Evaluation corrected successfully" });
+  } catch (error) {
+    console.error("Evaluation correction error:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to correct evaluation" });
+  }
+});
+
 
 // POST /save - Save the final CV data (manual + auto)
 router.post("/save", async (req, res) => {
@@ -169,6 +266,56 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /eval/token/:token - Get candidate by evaluation token
+router.get("/eval/token/:token", async (req, res) => {
+  try {
+    const { token } = req.params;
+    const db = getDB();
+
+    const candidate = await db
+      .collection("candidats")
+      .findOne({ evalToken: token });
+
+    if (!candidate) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found with this evaluation token" });
+    }
+
+    res.json({ success: true, data: candidate });
+  } catch (error) {
+    console.error("Fetch error by eval token:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch candidate by evaluation token" });
+  }
+});
+
+// GET /token/:token - Get candidate by form token
+router.get("/token/:token", async (req, res) => {
+  try {
+    const { token } = req.params;
+    const db = getDB();
+
+    const candidate = await db
+      .collection("candidats")
+      .findOne({ formToken: token });
+
+    if (!candidate) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found with this token" });
+    }
+
+    res.json({ success: true, data: candidate });
+  } catch (error) {
+    console.error("Fetch error by token:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to fetch candidate by token" });
+  }
+});
+
 // GET /:id - Get a single candidate
 router.get("/:id", async (req, res) => {
   try {
@@ -195,6 +342,78 @@ router.get("/:id", async (req, res) => {
     res
       .status(500)
       .json({ success: false, error: "Failed to fetch candidate" });
+  }
+});
+
+// PUT /eval/submit/:id - Submit evaluation for a candidate
+router.put("/eval/submit/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { evaluation, score } = req.body;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: "Invalid ID" });
+    }
+
+    const result = await db.collection("candidats").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          evaluation,
+          evaluationScore: score,
+          evaluationDate: new Date(),
+        },
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found" });
+    }
+
+    res.json({ success: true, message: "Evaluation submitted successfully" });
+  } catch (error) {
+    console.error("Evaluation submit error:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to submit evaluation" });
+  }
+});
+
+// PUT /qualified/:id - Mark candidate as qualified
+router.put("/qualified/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const db = getDB();
+
+    if (!ObjectId.isValid(id)) {
+      return res.status(400).json({ success: false, error: "Invalid ID" });
+    }
+
+    const result = await db.collection("candidats").updateOne(
+      { _id: new ObjectId(id) },
+      {
+        $set: {
+          qualified: true,
+          qualifiedDate: new Date(),
+        },
+      }
+    );
+
+    if (result.matchedCount === 0) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found" });
+    }
+
+    res.json({ success: true, message: "Candidate marked as qualified" });
+  } catch (error) {
+    console.error("Qualified error:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to mark candidate as qualified" });
   }
 });
 

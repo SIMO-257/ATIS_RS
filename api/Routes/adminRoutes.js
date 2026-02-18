@@ -66,7 +66,7 @@ BUCKETS.forEach((bucket) => {
 });
 
 
-// GET /api/admin/list (existing)
+// GET /list (existing)
 router.get('/list', async (req, res) => {
     try {
         const db = getDB();
@@ -79,9 +79,50 @@ router.get('/list', async (req, res) => {
 
     } catch (error) {
         console.error('Error fetching admins:', error);
-        res.status(500).json({ 
-            success: false, 
-            error: 'Erreur serveur lors de la récupération des administrateurs' 
+        res.status(500).json({
+            success: false,
+            error: 'Erreur serveur lors de la récupération des administrateurs'
+        });
+    }
+});
+
+// GET /auth/admins - Get all admins (alias for /list)
+router.get('/auth/admins', async (req, res) => {
+    try {
+        const db = getDB();
+        const admins = await db.collection('admins').find({}).project({ password: 0 }).toArray();
+
+        res.json({
+            success: true,
+            admins: admins
+        });
+
+    } catch (error) {
+        console.error('Error fetching admins:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch admins'
+        });
+    }
+});
+
+
+// GET /auth/admins - Get all admins (alias for /list)
+router.get('/auth/admins', async (req, res) => {
+    try {
+        const db = getDB();
+        const admins = await db.collection('admins').find({}).project({ password: 0 }).toArray();
+
+        res.json({
+            success: true,
+            admins: admins
+        });
+
+    } catch (error) {
+        console.error('Error fetching admins:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to fetch admins'
         });
     }
 });

@@ -12,7 +12,7 @@ const AdminList = () => {
   useEffect(() => {
     const fetchAdmins = async () => {
       try {
-        const response = await fetch(`${API_URL}/api/admin/list`);
+        const response = await fetch(`${API_URL}/admin/list`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }

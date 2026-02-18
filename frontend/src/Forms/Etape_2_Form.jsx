@@ -72,7 +72,7 @@ const Etape_2_Form = () => {
 
     try {
       const endpoint = candidateId
-        ? `${API_URL}/candidates/qualified/${candidateId}`
+        ? `${API_URL}/forms/qualified/${candidateId}`
         : `${API_URL}/candidates/save`; // Fallback or general save
 
       const method = candidateId ? "PATCH" : "POST";

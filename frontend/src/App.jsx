@@ -4,7 +4,7 @@ import CandidatesList from "./Candidates/CandidatesList";
 import CandidatsRefuses from "./Candidates/CandidatsRefuses";
 import CandidatsEmbauches from "./Candidates/CandidatsEmbauches";
 import Etape_2_Form from "./Forms/Etape_2_Form";
-import Etape_3_Form from "./Forms/Etape_3_Form";
+import Form3 from "./Forms/Form3/Form3";
 import AdminEvaluationCorrection from "./Forms/AdminEvaluationCorrection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLogin from "./Forms/AdminLogin";
@@ -24,8 +24,8 @@ export default function QuestionnaireForm() {
         <Route path="/form/:token" element={<Etape_2_Form />} />
 
         {/* Public Evaluation Route */}
-        <Route path="/evaluation/:token" element={<Etape_3_Form />} />
-        <Route path="/evaluation" element={<Etape_3_Form />} />
+        <Route path="/evaluation/:token" element={<Form3 />} />
+        <Route path="/evaluation" element={<Form3 />} />
 
         {/* Protected Admin Routes */}
         <Route

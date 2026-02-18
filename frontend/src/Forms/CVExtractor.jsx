@@ -48,7 +48,7 @@ const CVExtractor = () => {
 
   const checkOllamaHealth = async () => {
     try {
-      const response = await fetch(`${API_URL}/candidates/health`);
+      const response = await fetch(`${API_URL}/extract/health`);
       const data = await response.json();
       setOllamaStatus(data.ollamaRunning);
     } catch (err) {
@@ -81,7 +81,7 @@ const CVExtractor = () => {
     formData.append("cv", file);
 
     try {
-      const response = await fetch(`${API_URL}/candidates/extract`, {
+      const response = await fetch(`${API_URL}/extract`, {
         method: "POST",
         body: formData,
       });

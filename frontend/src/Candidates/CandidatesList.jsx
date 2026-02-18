@@ -88,7 +88,7 @@ const CandidatesList = () => {
   const handleEnableForm = async (id) => {
     try {
       const _id = normalizeId(id);
-      const response = await fetch(`${API_URL}/api/cv/${_id}`, {
+      const response = await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ formStatus: "active" }),
@@ -109,6 +109,7 @@ const CandidatesList = () => {
           window.open(link, "_blank");
         } catch {
           alert(`🚀 Formulaire activé. Lien : ${link}`);
+          window.open(link, "_blank");
         }
       }
     } catch (err) {

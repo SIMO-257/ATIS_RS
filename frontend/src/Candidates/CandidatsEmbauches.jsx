@@ -32,6 +32,7 @@ const SERVICES = [
   "Sourcing",
   "Info",
 ];
+const EVAL_TOTAL = 47;
 
 const CandidatsEmbauches = () => {
   const navigate = useNavigate();
@@ -90,8 +91,24 @@ const CandidatsEmbauches = () => {
   };
 
   const handleActivateEval = async (id) => {
+    const candidate = id && typeof id === "object" ? id : null;
+    const rawId = candidate && candidate._id ? candidate._id : id;
+    if (candidate?.evalStatus === "active" && candidate?.evalToken) {
+      const link = `${FRONTEND_URL}/evaluation/${candidate.evalToken}`;
+      try {
+        await navigator.clipboard.writeText(link);
+        alert(
+          `🚀 Évaluation activée ! Lien copié dans le presse-papier :\n\n${link}`,
+        );
+        window.open(link, "_blank");
+      } catch {
+        alert(`🚀 Évaluation activée !\n\nLien : ${link}`);
+        window.open(link, "_blank");
+      }
+      return;
+    }
     try {
-      const _id = normalizeId(id);
+      const _id = normalizeId(rawId);
       const res = await fetch(`${API_URL}/candidates/${_id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
@@ -359,7 +376,7 @@ const CandidatsEmbauches = () => {
                         </button>
                       ) : (
                         <button
-                          onClick={() => handleActivateEval(candidate._id)}
+                          onClick={() => handleActivateEval(candidate)}
                           className="extract-button"
                           style={{
                             padding: "6px 10px",
@@ -379,7 +396,7 @@ const CandidatsEmbauches = () => {
                     {/* Score column */}
                     <td style={{ fontWeight: 600, textAlign: "center" }}>
                       {candidate.evalScore != null
-                        ? `${candidate.evalScore}/38`
+                        ? `${candidate.evalScore}/${EVAL_TOTAL}`
                         : "-"}
                     </td>
                     {/* PDF column */}

@@ -51,9 +51,9 @@ const PORT = process.env.PORT || 5000;
 // Only start the server if app.js is run directly (not imported)
 if (require.main === module) {
     connectDB().then(() => {
-      app.listen(PORT, () => {
+      app.listen(PORT, '0.0.0.0', () => {
         console.log(`🚀 Server running on port ${PORT}`);
-        console.log(`📡 API available at http://localhost:${PORT}`);
+        console.log(`📡 API available at http://0.0.0.0:${PORT}`);
         console.log(`MongoDB connecte`);
       });
     }).catch(err => {
