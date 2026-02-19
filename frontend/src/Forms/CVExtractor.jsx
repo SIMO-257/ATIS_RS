@@ -9,37 +9,13 @@ const CVExtractor = () => {
   const [loading, setLoading] = useState(false);
   const [cvData, setCvData] = useState({
     Nom: "",
-    Prénom: "",
-    "Date de naissance": "",
-    "Adress Actuel": "",
-    "Post Actuel": "",
-    Société: "",
-    "Date d'embauche": "",
-    "Salaire net Actuel": "",
-    "Votre dernier diplome": "",
-    "Votre niveau de l'anglais technique": {
-      Lu: "",
-      Ecrit: "",
-      Parlé: "",
-    },
-    situationFamiliale: "",
-    nbEnfants: "",
-    pourquoiChanger: "",
-    dureePreavis: "",
-    fonctionsMissions: "",
-    ecole: "",
-    anneeDiplome: "",
-    posteSedentaire: "",
-    missionsMaitrisees: "",
-    travailSeulEquipe: "",
-    zoneSapino: "",
-    motorise: "",
-    pretentionsSalariales: "",
-    questionsRemarques: "",
+    Prenom: "",
+    cvUrl: "",
   });
   const [extractionDone, setExtractionDone] = useState(false);
   const [error, setError] = useState(null);
   const [ollamaStatus, setOllamaStatus] = useState(true);
+  const [jobId, setJobId] = useState(null);
 
   // Check Ollama status on mount
   React.useEffect(() => {
@@ -76,6 +52,7 @@ const CVExtractor = () => {
 
     setLoading(true);
     setError(null);
+    setJobId(null);
 
     const formData = new FormData();
     formData.append("cv", file);
@@ -88,192 +65,82 @@ const CVExtractor = () => {
 
       const result = await response.json();
 
-      if (result.success) {
-        setCvData({ ...result.data, originalCvMinioPath: result.cvUrl });
-        setExtractionDone(true);
-        setError(null);
+      if (result.success && result.jobId) {
+        setJobId(result.jobId);
       } else {
         setError(result.error || "Erreur lors de l'extraction");
+        setLoading(false);
       }
     } catch (err) {
       setError(
         "Erreur de connexion au serveur. Assurez-vous que l'API est en cours d'exécution.",
       );
       console.error("Extraction error:", err);
-    } finally {
       setLoading(false);
     }
   };
 
-  const handleInputChange = (field, value) => {
-    // Extracted fields are read-only as per request
-    console.log("Edit ignored: Fields are read-only");
-  };
+  React.useEffect(() => {
+    if (!jobId) return;
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    // Validation: Check for empty fields
-    const emptyFields = Object.entries(cvData)
-      .filter(([key, value]) => {
-        if (key === "originalCvMinioPath") return false;
-        if (key === "Votre niveau de l'anglais technique") {
-          // For the English object, check if all sub-fields are present
-          return (
-            !value?.Lu?.trim() || !value?.Ecrit?.trim() || !value?.Parlé?.trim()
-          );
+    let cancelled = false;
+    const intervalId = setInterval(async () => {
+      try {
+        const response = await fetch(`${API_URL}/extract/status/${jobId}`);
+        const result = await response.json();
+        if (!result.success) {
+          setError(result.error || "Erreur lors de l'extraction");
+          setLoading(false);
+          setJobId(null);
+          clearInterval(intervalId);
+          return;
         }
-        return !value?.trim();
-      })
-      .map(([key]) => key);
 
-    if (emptyFields.length > 0) {
-      setError(
-        `Veuillez remplir tous les champs obligatoires (${emptyFields.length} manquants)`,
-      );
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await fetch(`${API_URL}/candidates/save`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cvData),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        alert("✅ Données CV enregistrées avec succès!");
-        // Reset form
-        setFile(null);
-        setExtractionDone(false);
-        setCvData({
-          Nom: "",
-          Prénom: "",
-          "Date de naissance": "",
-          "Adress Actuel": "",
-          "Post Actuel": "",
-          Société: "",
-          "Date d'embauche": "",
-          "Salaire net Actuel": "",
-          "Votre dernier diplome": "",
-          "Votre niveau de l'anglais technique": "",
-          situationFamiliale: "",
-          nbEnfants: "",
-          pourquoiChanger: "",
-          dureePreavis: "",
-          fonctionsMissions: "",
-          ecole: "",
-          anneeDiplome: "",
-          posteSedentaire: "",
-          missionsMaitrisees: "",
-          travailSeulEquipe: "",
-          zoneSapino: "",
-          motorise: "",
-          pretentionsSalariales: "",
-          questionsRemarques: "",
-        });
-      } else {
-        setError(result.error || "Erreur lors de l'enregistrement");
+        if (result.status === "done") {
+          if (!cancelled) {
+            setCvData({
+              Nom: result.data?.Nom || "",
+              Prenom: result.data?.Prenom || "",
+              cvUrl: result.cvUrl || result.data?.cvUrl || "",
+            });
+            setExtractionDone(true);
+            setError(null);
+            setLoading(false);
+            setJobId(null);
+            clearInterval(intervalId);
+          }
+        } else if (result.status === "error") {
+          if (!cancelled) {
+            setError(result.error || "Erreur lors de l'extraction");
+            setLoading(false);
+            setJobId(null);
+            clearInterval(intervalId);
+          }
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError("Erreur de connexion au serveur.");
+          setLoading(false);
+          setJobId(null);
+          clearInterval(intervalId);
+        }
       }
-    } catch (err) {
-      setError("Erreur de connexion au serveur");
-      console.error("Save error:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    }, 3000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(intervalId);
+    };
+  }, [jobId]);
+
 
   const handleReset = () => {
     setFile(null);
     setExtractionDone(false);
     setError(null);
-    setCvData({
-      Nom: "",
-      Prénom: "",
-      "Date de naissance": "",
-      "Adress Actuel": "",
-      "Post Actuel": "",
-      Société: "",
-      "Date d'embauche": "",
-      "Salaire net Actuel": "",
-      "Votre dernier diplome": "",
-      "Votre niveau de l'anglais technique": "",
-      situationFamiliale: "",
-      nbEnfants: "",
-      pourquoiChanger: "",
-      dureePreavis: "",
-      fonctionsMissions: "",
-      ecole: "",
-      anneeDiplome: "",
-      posteSedentaire: "",
-      missionsMaitrisees: "",
-      travailSeulEquipe: "",
-      zoneSapino: "",
-      motorise: "",
-      pretentionsSalariales: "",
-      questionsRemarques: "",
-    });
+    setCvData({ Nom: "", Prenom: "", cvUrl: "" });
   };
 
-  const fieldLabels = {
-    Nom: "Nom de famille",
-    Prénom: "Prénom",
-    "Date de naissance": "Date de naissance",
-    "Adress Actuel": "Adresse actuelle",
-    "Post Actuel": "Poste actuel",
-    Société: "Société",
-    "Date d'embauche": "Date d'embauche",
-    "Salaire net Actuel": "Salaire net actuel",
-    "Votre dernier diplome": "Dernier diplôme",
-    "Votre niveau de l'anglais technique": "Niveau d'anglais technique",
-    situationFamiliale: "Situation familiale",
-    nbEnfants: "Nombre d'enfants",
-    pourquoiChanger: "Pourquoi changer?",
-    dureePreavis: "Durée du préavis",
-    fonctionsMissions: "Fonctions et missions",
-    ecole: "École / Université",
-    anneeDiplome: "Année diplôme",
-    posteSedentaire: "Poste sédentaire",
-    missionsMaitrisees: "Missions maîtrisées",
-    travailSeulEquipe: "Travail seul/équipe",
-    zoneSapino: "Zone Sapino",
-    motorise: "Motorisé(e)",
-    pretentionsSalariales: "Prétentions salariales",
-    questionsRemarques: "Questions/Remarques",
-  };
-
-  const fieldIcons = {
-    Nom: "👤",
-    Prénom: "👤",
-    "Date de naissance": "📅",
-    "Adress Actuel": "🏠",
-    "Post Actuel": "💼",
-    Société: "🏢",
-    "Date d'embauche": "📆",
-    "Salaire net Actuel": "💰",
-    "Votre dernier diplome": "🎓",
-    "Votre niveau de l'anglais technique": "🌐",
-    situationFamiliale: "👥",
-    nbEnfants: "👶",
-    pourquoiChanger: "❓",
-    dureePreavis: "⏳",
-    fonctionsMissions: "📝",
-    ecole: "🏫",
-    anneeDiplome: "📅",
-    posteSedentaire: "🪑",
-    missionsMaitrisees: "💪",
-    travailSeulEquipe: "🤝",
-    zoneSapino: "📍",
-    motorise: "🚗",
-    pretentionsSalariales: "💵",
-    questionsRemarques: "💬",
-  };
 
   /* Form Actions - Add View Candidates button */
   return (
@@ -298,6 +165,16 @@ const CVExtractor = () => {
 
           {!extractionDone ? (
             <div className="upload-section">
+              <div
+                style={{
+                  fontSize: "0.95rem",
+                  color: "#e2e8f0",
+                  fontWeight: 600,
+                  marginBottom: "12px",
+                }}
+              >
+                Le scan peut prendre 20 a 60 secondes selon la taille du CV.
+              </div>
               <div className="file-upload-wrapper">
                 <input
                   type="file"
@@ -332,88 +209,76 @@ const CVExtractor = () => {
         {/* Form Panel - Only shown when extraction is done */}
         {extractionDone && (
           <div className="form-panel">
-            <form onSubmit={handleSubmit} className="cv-form">
-              <div className="form-header">
-                <h2>Vérification des données</h2>
-                <p className="form-subtitle">
-                  Vérifiez et complétez les informations extraites
-                </p>
+            <div className="form-header">
+              <h2>Extraction terminee</h2>
+              <p className="form-subtitle">Le candidat a ete ajoute a l'archive.</p>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: "16px",
+                marginTop: "10px",
+              }}
+            >
+              <div
+                style={{
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  padding: "16px",
+                }}
+              >
+                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Nom</div>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1f2937" }}>
+                  {cvData.Nom || "-"}
+                </div>
               </div>
-
-              <div className="form-grid">
-                {Object.entries(cvData)
-                  .filter(
-                    ([field]) =>
-                      field !== "originalCvMinioPath" && fieldLabels[field],
-                  ) // Filter out technical fields and ensure label exists
-                  .map(([field, value]) => (
-                    <div key={field} className="form-group">
-                      <label htmlFor={field} className="form-label">
-                        <span className="field-icon">{fieldIcons[field]}</span>
-                        {fieldLabels[field]}
-                        {!value && (
-                          <span className="required-badge">Requis</span>
-                        )}
-                      </label>
-
-                      {field === "Votre niveau de l'anglais technique" ? (
-                        <ul
-                          className="english-skills-preview-list"
-                          style={{ listStyle: "none", padding: 0, margin: 0 }}
-                        >
-                          <li>
-                            <strong>Lu:</strong> {value?.Lu || "-"}
-                          </li>
-                          <li>
-                            <strong>Ecrit:</strong> {value?.Ecrit || "-"}
-                          </li>
-                          <li>
-                            <strong>Parlé:</strong> {value?.Parlé || "-"}
-                          </li>
-                        </ul>
-                      ) : (
-                        <input
-                          type="text"
-                          id={field}
-                          value={value}
-                          readOnly
-                          placeholder={fieldLabels[field]}
-                          className="form-input filled read-only"
-                          style={{
-                            backgroundColor: "#f1f1f1",
-                            cursor: "not-allowed",
-                          }}
-                        />
-                      )}
-                    </div>
-                  ))}
+              <div
+                style={{
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  padding: "16px",
+                }}
+              >
+                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Prenom</div>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1f2937" }}>
+                  {cvData.Prenom || "-"}
+                </div>
               </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  onClick={handleReset}
-                  className="reset-button"
-                  disabled={loading}
-                >
-                  ↺ Recommencer
-                </button>
-                <button
-                  type="submit"
-                  className="submit-button"
-                  disabled={loading}
-                >
-                  {loading ? (
-                    <>
-                      <span className="spinner"></span>
-                      Enregistrement...
-                    </>
-                  ) : (
-                    <>💾 Enregistrer</>
-                  )}
-                </button>
+              <div
+                style={{
+                  gridColumn: "1 / -1",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  background: "#ffffff",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  padding: "12px 16px",
+                }}
+              >
+                <div style={{ fontWeight: 600, color: "#1f2937" }}>CV</div>
+                {cvData.cvUrl ? (
+                  <a
+                    href={cvData.cvUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="download-link"
+                  >
+                    Voir le CV
+                  </a>
+                ) : (
+                  <span className="no-file">-</span>
+                )}
               </div>
-            </form>
+            </div>
+            <div className="form-actions" style={{ marginTop: "16px" }}>
+              <button type="button" onClick={handleReset} className="reset-button">
+                Nouveau scan
+              </button>
+            </div>
           </div>
         )}
       </div>

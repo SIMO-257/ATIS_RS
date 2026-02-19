@@ -1,31 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LabelList } from 'recharts';
 import '../styles/DashboardCharts.css';
+import { API_URL } from '../config';
 
 const DashboardCharts = () => {
   const [chartData, setChartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const isInitialLoad = useRef(true);
 
   useEffect(() => {
-    const fetchMockData = async () => {
-      setLoading(true);
-      // Simulate API call delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-      const data = months.map(month => ({
-        name: month,
-        candidats: Math.floor(Math.random() * 100),
-        embauches: Math.floor(Math.random() * 50),
-        refuses: Math.floor(Math.random() * 30),
-        depart: Math.floor(Math.random() * 20),
-        acceptes: Math.floor(Math.random() * 40),
-      }));
-      setChartData(data);
-      setLoading(false);
+    const fetchStats = async () => {
+      try {
+        if (isInitialLoad.current) setLoading(true);
+        const year = new Date().getFullYear();
+        const response = await fetch(`${API_URL}/candidates/stats?year=${year}`);
+        const result = await response.json();
+        if (result.success) {
+          setChartData(result.data || []);
+        } else {
+          console.error("Failed to load stats:", result.error);
+        }
+      } catch (err) {
+        console.error("Error fetching stats:", err);
+      } finally {
+        isInitialLoad.current = false;
+        setLoading(false);
+      }
     };
 
-    fetchMockData();
+    fetchStats();
+    const intervalId = setInterval(fetchStats, 3000);
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {

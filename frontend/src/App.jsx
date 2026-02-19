@@ -3,8 +3,9 @@ import CVExtractor from "./Forms/CVExtractor";
 import CandidatesList from "./Candidates/CandidatesList";
 import CandidatsRefuses from "./Candidates/CandidatsRefuses";
 import CandidatsEmbauches from "./Candidates/CandidatsEmbauches";
-import Etape_2_Form from "./Forms/Etape_2_Form";
+import ArchiveList from "./Candidates/ArchiveList";
 import Form3 from "./Forms/Form3/Form3";
+import EvaluationGate from "./Forms/EvaluationGate";
 import AdminEvaluationCorrection from "./Forms/AdminEvaluationCorrection";
 import ProtectedRoute from "./components/ProtectedRoute";
 import AdminLogin from "./Forms/AdminLogin";
@@ -21,10 +22,9 @@ export default function QuestionnaireForm() {
         {/* Public Routes */}
         <Route path="/" element={<WelcomePage />} />
         <Route path="/login" element={<AdminLogin />} />
-        <Route path="/form/:token" element={<Etape_2_Form />} />
 
         {/* Public Evaluation Route */}
-        <Route path="/evaluation/:token" element={<Form3 />} />
+        <Route path="/evaluation/:token" element={<EvaluationGate />} />
         <Route path="/evaluation" element={<Form3 />} />
 
         {/* Protected Admin Routes */}
@@ -61,6 +61,14 @@ export default function QuestionnaireForm() {
           element={
             <ProtectedRoute>
               <CandidatsEmbauches />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/archive"
+          element={
+            <ProtectedRoute>
+              <ArchiveList />
             </ProtectedRoute>
           }
         />

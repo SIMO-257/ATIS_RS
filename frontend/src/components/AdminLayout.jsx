@@ -19,6 +19,7 @@ const AdminLayout = ({ children }) => {
           <li><Link to="/candidates">📋 Candidats</Link></li>
           <li><Link to="/hired">🤝 Embauchés</Link></li>
           <li><Link to="/liste-depart">📋 Liste Départ</Link></li>
+          <li><Link to="/archive">&#128230; Archive </Link></li>
           <li><Link to="/dashboard">📊 Dashboard</Link></li>
         </ul>
         <div className="navbar-right">

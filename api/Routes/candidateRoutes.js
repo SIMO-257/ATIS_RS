@@ -4,6 +4,7 @@ const { getDB } = require("../db");
 const { ObjectId } = require("mongodb");
 const path = require("path");
 const { Client } = require("minio");
+const multer = require("multer");
 const PDFDocument = require("pdfkit");
 const { PassThrough } = require("stream");
 const fs = require("fs");
@@ -73,6 +74,10 @@ function parseMinioLocation(value, defaultBucket) {
   return { bucket: defaultBucket, objectName: value };
 }
 
+function escapeRegex(text) {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
 // MinIO Client
 const minioClient = new Client({
   endPoint: "minio",
@@ -132,6 +137,109 @@ BUCKETS.forEach((bucket) => {
     }
   });
 });
+
+const form2Storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, "..", "temp_uploads");
+    fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    cb(null, `form2-${Date.now()}${path.extname(file.originalname)}`);
+  },
+});
+
+const uploadForm2 = multer({
+  storage: form2Storage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF or Word documents are allowed for Form 2!"), false);
+    }
+  },
+});
+
+// POST /:id/upload-form2 - Upload Form 2 file
+router.post(
+  "/:id/upload-form2",
+  uploadForm2.single("form2File"),
+  async (req, res) => {
+    try {
+      const { id } = req.params;
+      if (!req.file) {
+        return res
+          .status(400)
+          .json({ success: false, error: "No file uploaded." });
+      }
+
+      const db = getDB();
+      if (!ObjectId.isValid(id)) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ success: false, error: "Invalid ID" });
+      }
+
+      const candidate = await db
+        .collection("candidats")
+        .findOne({ _id: new ObjectId(id) });
+      if (!candidate) {
+        fs.unlinkSync(req.file.path);
+        return res
+          .status(404)
+          .json({ success: false, error: "Candidate not found." });
+      }
+
+      const fileBuffer = fs.readFileSync(req.file.path);
+      const minioFileName = `form2-${id}-${Date.now()}${path.extname(
+        req.file.originalname,
+      )}`;
+
+      await minioClient.putObject(
+        FORM2_BUCKET,
+        minioFileName,
+        fileBuffer,
+        fileBuffer.length,
+        { "Content-Type": req.file.mimetype },
+      );
+
+      const form2MinioPath = `${process.env.MINIO_PUBLIC_URL}/${FORM2_BUCKET}/${minioFileName}`;
+      await db.collection("candidats").updateOne(
+        { _id: new ObjectId(id) },
+        {
+          $set: {
+            qualifiedFormPath: form2MinioPath,
+            formStatus: "submitted",
+            formSubmittedAt: new Date(),
+          },
+        },
+      );
+
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      res.json({
+        success: true,
+        message: "Form 2 uploaded successfully.",
+        filePath: form2MinioPath,
+      });
+    } catch (error) {
+      console.error("Error uploading Form 2:", error);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      res
+        .status(500)
+        .json({ success: false, error: "Server error during upload." });
+    }
+  },
+);
 
 // POST /:id/upload-rapport-stage - Upload stage rapport
 router.post("/:id/upload-rapport-stage", async (req, res) => {
@@ -305,6 +413,106 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET /stats - Monthly dashboard stats (current year or ?year=YYYY)
+router.get("/stats", async (req, res) => {
+  try {
+    const db = getDB();
+    const yearParam = Number.parseInt(req.query.year, 10);
+    const year = Number.isFinite(yearParam) ? yearParam : new Date().getFullYear();
+
+    const candidates = await db
+      .collection("candidats")
+      .find(
+        {},
+        {
+          projection: {
+            createdAt: 1,
+            status: 1,
+            statusUpdatedAt: 1,
+            hiringStatus: 1,
+            hiringStatusUpdatedAt: 1,
+            dateDepart: 1,
+            dateDepartUpdatedAt: 1,
+          },
+        },
+      )
+      .toArray();
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const data = months.map((name) => ({
+      name,
+      candidats: 0,
+      embauches: 0,
+      refuses: 0,
+      depart: 0,
+      acceptes: 0,
+    }));
+
+    const inYear = (date) => {
+      if (!date || Number.isNaN(date.getTime())) return false;
+      return date.getFullYear() === year;
+    };
+
+    const getDate = (value) => {
+      if (!value) return null;
+      if (value instanceof Date) return value;
+      const parsed = new Date(value);
+      return Number.isNaN(parsed.getTime()) ? null : parsed;
+    };
+
+    const acceptedValues = new Set(["Accepté", "AcceptÃ©"]);
+    const refusedValues = new Set(["Refusé", "RefusÃ©"]);
+    const hiredValues = new Set(["Embaucé", "EmbaucÃ©"]);
+
+    candidates.forEach((candidate) => {
+      const createdAt = getDate(candidate.createdAt);
+      if (inYear(createdAt)) {
+        const month = createdAt.getMonth();
+        data[month].candidats += 1;
+      }
+
+      if (acceptedValues.has(candidate.status)) {
+        const statusDate = getDate(candidate.statusUpdatedAt) || createdAt;
+        if (inYear(statusDate)) {
+          const month = statusDate.getMonth();
+          data[month].acceptes += 1;
+        }
+      }
+
+      if (refusedValues.has(candidate.status)) {
+        const statusDate = getDate(candidate.statusUpdatedAt) || createdAt;
+        if (inYear(statusDate)) {
+          const month = statusDate.getMonth();
+          data[month].refuses += 1;
+        }
+      }
+
+      if (hiredValues.has(candidate.hiringStatus)) {
+        const hireDate = getDate(candidate.hiringStatusUpdatedAt) || createdAt;
+        if (inYear(hireDate)) {
+          const month = hireDate.getMonth();
+          data[month].embauches += 1;
+        }
+      }
+
+      if (candidate.dateDepart) {
+        const departDate =
+          getDate(candidate.dateDepartUpdatedAt) ||
+          getDate(candidate.dateDepart);
+        if (inYear(departDate)) {
+          const month = departDate.getMonth();
+          data[month].depart += 1;
+        }
+      }
+    });
+
+    res.json({ success: true, year, data });
+  } catch (error) {
+    console.error("Error fetching stats:", error);
+    res.status(500).json({ success: false, error: "Failed to fetch stats" });
+  }
+});
+
 // GET /eval/token/:token - Get candidate by evaluation token
 router.get("/eval/token/:token", async (req, res) => {
   try {
@@ -327,6 +535,54 @@ router.get("/eval/token/:token", async (req, res) => {
     res
       .status(500)
       .json({ success: false, error: "Failed to fetch candidate by evaluation token" });
+  }
+});
+
+// POST /eval/lookup - Find candidate by name + date of birth for evaluation access
+router.post("/eval/lookup", async (req, res) => {
+  try {
+    const { nom, prenom, dateNaissance } = req.body || {};
+    if (!nom || !prenom || !dateNaissance) {
+      return res.status(400).json({
+        success: false,
+        error: "nom, prenom, and dateNaissance are required",
+      });
+    }
+
+    const db = getDB();
+    const nomRegex = new RegExp(`^${escapeRegex(nom.trim())}$`, "i");
+    const prenomRegex = new RegExp(`^${escapeRegex(prenom.trim())}$`, "i");
+
+    const candidate = await db
+      .collection("candidats")
+      .findOne(
+        {
+          Nom: { $regex: nomRegex },
+          "Pr\u00e9nom": { $regex: prenomRegex },
+          "Date de naissance": dateNaissance,
+        },
+        { sort: { createdAt: -1 } },
+      );
+
+    if (!candidate) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found" });
+    }
+
+    res.json({
+      success: true,
+      data: {
+        _id: candidate._id,
+        evalStatus: candidate.evalStatus || "inactive",
+        evalToken: candidate.evalToken || null,
+      },
+    });
+  } catch (error) {
+    console.error("Eval lookup error:", error);
+    res
+      .status(500)
+      .json({ success: false, error: "Failed to lookup candidate" });
   }
 });
 
@@ -617,46 +873,66 @@ router.put("/:id", async (req, res) => {
       return res.status(400).json({ success: false, error: "Invalid ID" });
     }
 
+    const candidate = await db
+      .collection("candidats")
+      .findOne({ _id: new ObjectId(id) });
+    if (!candidate) {
+      return res
+        .status(404)
+        .json({ success: false, error: "Candidate not found" });
+    }
+
+    const now = new Date();
+
     // If enabling the form, generate a secure token if it doesn't exist
     if (updates.formStatus === "active") {
-      console.log("🔑 Activating form for candidate ID:", id);
-      const candidate = await db
-        .collection("candidats")
-        .findOne({ _id: new ObjectId(id) });
-      if (candidate && !candidate.formToken) {
+      console.log("???? Activating form for candidate ID:", id);
+      if (!candidate.formToken) {
         updates.formToken = crypto.randomBytes(16).toString("hex");
-        console.log("🆕 Generated new token:", updates.formToken);
-      } else if (candidate) {
-        console.log("ℹ️ Using existing token:", candidate.formToken);
+        console.log("???? Generated new token:", updates.formToken);
+      } else {
+        console.log("?????? Using existing token:", candidate.formToken);
       }
     }
 
     // If enabling evaluation, generate an eval token if missing
     if (updates.evalStatus === "active") {
-      console.log("🧪 Activating evaluation for candidate ID:", id);
-      const candidate = await db
-        .collection("candidats")
-        .findOne({ _id: new ObjectId(id) });
-      if (candidate && !candidate.evalToken) {
+      console.log("???? Activating evaluation for candidate ID:", id);
+      if (!candidate.evalToken) {
         updates.evalToken = crypto.randomBytes(16).toString("hex");
-        console.log("🆕 Generated eval token:", updates.evalToken);
-      } else if (candidate) {
-        console.log("ℹ️ Existing eval token:", candidate.evalToken);
+        console.log("???? Generated eval token:", updates.evalToken);
+      } else {
+        console.log("?????? Existing eval token:", candidate.evalToken);
       }
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(updates, "status") &&
+      updates.status !== candidate.status
+    ) {
+      updates.statusUpdatedAt = now;
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(updates, "hiringStatus") &&
+      updates.hiringStatus !== candidate.hiringStatus
+    ) {
+      updates.hiringStatusUpdatedAt = now;
+    }
+
+    if (
+      Object.prototype.hasOwnProperty.call(updates, "dateDepart") &&
+      updates.dateDepart !== candidate.dateDepart
+    ) {
+      updates.dateDepartUpdatedAt = now;
     }
 
     // Remove _id from updates if present
     delete updates._id;
 
-    const result = await db
+    await db
       .collection("candidats")
       .updateOne({ _id: new ObjectId(id) }, { $set: updates });
-
-    if (result.matchedCount === 0) {
-      return res
-        .status(404)
-        .json({ success: false, error: "Candidate not found" });
-    }
 
     // Return the updated data so frontend can get the token
     const updatedCandidate = await db

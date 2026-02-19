@@ -42,6 +42,8 @@ const CandidatsEmbauches = () => {
 
   useEffect(() => {
     fetchCandidates();
+    const intervalId = setInterval(fetchCandidates, 3000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchCandidates = async () => {
@@ -100,10 +102,8 @@ const CandidatsEmbauches = () => {
         alert(
           `🚀 Évaluation activée ! Lien copié dans le presse-papier :\n\n${link}`,
         );
-        window.open(link, "_blank");
       } catch {
         alert(`🚀 Évaluation activée !\n\nLien : ${link}`);
-        window.open(link, "_blank");
       }
       return;
     }
@@ -128,9 +128,7 @@ const CandidatsEmbauches = () => {
           alert(
             `🚀 Évaluation activée ! Lien copié dans le presse-papier :\n\n${link}`,
           );
-          // Open the evaluation form in a new tab automatically
-          window.open(link, "_blank");
-        } catch {
+          } catch {
           alert(`🚀 Évaluation activée !\n\nLien : ${link}`);
         }
       } else {

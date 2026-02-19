@@ -9,6 +9,9 @@ const getApiUrl = () => {
 };
 
 const getFrontendUrl = () => {
+  if (import.meta.env.VITE_FRONTEND_URL) {
+    return import.meta.env.VITE_FRONTEND_URL;
+  }
   return window.location.origin;
 };
 

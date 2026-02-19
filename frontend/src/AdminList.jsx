@@ -30,6 +30,8 @@ const AdminList = () => {
     };
 
     fetchAdmins();
+    const intervalId = setInterval(fetchAdmins, 3000);
+    return () => clearInterval(intervalId);
   }, []);
 
   if (loading) {

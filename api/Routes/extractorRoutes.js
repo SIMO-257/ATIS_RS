@@ -7,6 +7,8 @@ const path = require("path");
 const { Client } = require("minio");
 const { getDB } = require("../db");
 
+const extractionJobs = new Map();
+
 // MinIO Client
 const minioClient = new Client({
   endPoint: "minio",
@@ -83,95 +85,14 @@ const ollama = axios.create({
   timeout: 300000, // 5 minutes
 });
 
-//Exract Form from Page3:
-function extractRecruitmentForm(pdfText) {
-  const pages = pdfText.split("\f");
-
-  // 1️⃣ Fast path: page 3 exists
-  if (pages[2] && pages[2].includes("QUESTIONNAIRE DE RECRUTEMENT")) {
-    return pages[2];
-  }
-
-  // 2️⃣ Fallback: search globally (robust)
-  const marker = "QUESTIONNAIRE DE RECRUTEMENT";
-  const idx = pdfText.indexOf(marker);
-
-  if (idx !== -1) {
-    // Take a safe slice after the marker
-    return pdfText.slice(idx, idx + 6000);
-  }
-
-  // 3️⃣ Hard failure (true invalid PDF)
-  const err = new Error("FORM_NOT_FOUND");
-  err.code = "FORM_NOT_FOUND";
-    console.error("❌ Form not found in PDF:", err.message); // Added console.error
-    throw err;
-}
-function extractEnglishManually(formText) {
-  const lines = formText
-    .replace(/\r/g, "")
-    .split("\n")
-    .map((l) => l.trimEnd());
-
-  // 1️⃣ Find header line
-  const headerIndex = lines.findIndex((l) => /faible\s+moyen\s+bien/i.test(l));
-
-  if (headerIndex === -1) {
-    return { Lu: "-", Ecrit: "-", Parlé: "-" };
-  }
-
-  const header = lines[headerIndex];
-
-  // 2️⃣ Get column positions
-  const col = {
-    faible: header.toLowerCase().indexOf("faible"),
-    moyen: header.toLowerCase().indexOf("moyen"),
-    bien: header.toLowerCase().indexOf("bien"),
-  };
-
-  function resolveRow(label) {
-    const row = lines.find((l) => new RegExp(`^${label}\\b`, "i").test(l));
-
-    if (!row) return "-";
-
-    const picks = [];
-
-    if (row[col.faible] === "X") picks.push("Faible");
-    if (row[col.moyen] === "X") picks.push("Moyen");
-    if (row[col.bien] === "X") picks.push("Bien");
-
-    return picks.length === 1 ? picks[0] : "-";
-  }
-  console.log("📊 ENGLISH TABLE LINES:");
-  lines.slice(headerIndex - 2, headerIndex + 6).forEach((l) => console.log(l));
-
-  return {
-    Lu: resolveRow("Lu"),
-    Ecrit: resolveRow("Ecrit"),
-    Parlé: resolveRow("Parl[eé]"),
-  };
-}
-
-// Extract CV information using Ollama
-async function extractWithOllama(pdfText) {
+// Extract candidate name using Ollama
+async function extractNameWithOllama(pdfText) {
   try {
-    // 1️⃣ Strict extraction: ONLY Page 3
-    const formText = await extractRecruitmentForm(pdfText);
-    const englishLevel = extractEnglishManually(formText);
-
-    console.log("🇬🇧 English extracted manually:", englishLevel);
-    console.log("=== FORM TEXT DEBUG ===");
-    console.log("Full formText length:", formText.length);
-    console.log("formText:", formText);
-    console.log("=== END FORM TEXT DEBUG ===");
-
-    // 2️⃣ Strict, minimal, deterministic prompt
     const prompt = `You are a STRICT data extraction engine.
 
 ABSOLUTE RULES:
-- Extract ONLY information explicitly written in the form.
+- Extract ONLY the candidate's name.
 - DO NOT infer, guess, normalize, or harmonize values.
-- DO NOT make values consistent across fields.
 - If a field is empty, unclear, or ambiguous, return "-".
 - Output VALID JSON ONLY.
 - NO explanations. NO comments. NO extra text.
@@ -179,36 +100,14 @@ ABSOLUTE RULES:
 JSON FORMAT (must match EXACTLY):
 {
   "Nom": "string",
-  "Prénom": "string",
-  "Date de naissance": "string",
-  "Adress Actuel": "string",
-  "Post Actuel": "string",
-  "Société": "string",
-  "Date d'embauche": "string",
-  "Salaire net Actuel": "string",
-  "Votre dernier diplome": "string",
-  "situationFamiliale": "string",
-  "nbEnfants": "string",
-  "pourquoiChanger": "string",
-  "dureePreavis": "string",
-  "fonctionsMissions": "string",
-  "ecole": "string",
-  "anneeDiplome": "string",
-  "posteSedentaire": "string",
-  "missionsMaitrisees": "string",
-  "travailSeulEquipe": "string",
-  "zoneSapino": "string",
-  "motorise": "string",
-  "pretentionsSalariales": "string",
-  "questionsRemarques": "string"
+  "Prenom": "string"
 }
 
-FORM TEXT:
-${formText}
+DOCUMENT TEXT:
+${pdfText}
 
 JSON:`;
 
-    // 3️⃣ Locked Ollama call (NO creativity)
     const response = await ollama.post("/api/generate", {
       model: "qwen2.5:latest",
       prompt,
@@ -217,62 +116,32 @@ JSON:`;
         temperature: 0,
         top_p: 0.1,
         repeat_penalty: 1.1,
-        num_ctx: 4096,
-        num_predict: 500,
+        num_ctx: 2048,
+        num_predict: 120,
       },
     });
-
-    // 4️⃣ Clean & parse response
-    console.log("RAW ENGLISH BLOCK:");
-    console.log(formText.match(/anglais(.|\n){0,300}/i));
 
     let raw = response.data.response.replace(/```json|```/g, "").trim();
     const firstBrace = raw.indexOf("{");
     const lastBrace = raw.lastIndexOf("}");
 
-    if (firstBrace === -1 || lastBrace === -1) {
+    if (firstBrace == -1 || lastBrace == -1) {
       throw new Error("No JSON object returned by model");
     }
 
     const extracted = JSON.parse(raw.slice(firstBrace, lastBrace + 1));
-
-    // 5️⃣ Enforce schema & defaults (ANTI-HALLUCINATION)
-    const result = {
+    return {
       Nom: extracted["Nom"] || "-",
-      Prénom: extracted["Prénom"] || "-",
-      "Date de naissance": extracted["Date de naissance"] || "-",
-      "Adress Actuel": extracted["Adress Actuel"] || "-",
-      "Post Actuel": extracted["Post Actuel"] || "-",
-      Société: extracted["Société"] || "-",
-      "Date d'embauche": extracted["Date d'embauche"] || "-",
-      "Salaire net Actuel": extracted["Salaire net Actuel"] || "-",
-      "Votre dernier diplome": extracted["Votre dernier diplome"] || "-",
-      situationFamiliale: extracted["situationFamiliale"] || "-",
-      nbEnfants: extracted["nbEnfants"] || "-",
-      pourquoiChanger: extracted["pourquoiChanger"] || "-",
-      dureePreavis: extracted["dureePreavis"] || "-",
-      fonctionsMissions: extracted["fonctionsMissions"] || "-",
-      ecole: extracted["ecole"] || "-",
-      anneeDiplome: extracted["anneeDiplome"] || "-",
-      posteSedentaire: extracted["posteSedentaire"] || "-",
-      missionsMaitrisees: extracted["missionsMaitrisees"] || "-",
-      travailSeulEquipe: extracted["travailSeulEquipe"] || "-",
-      zoneSapino: extracted["zoneSapino"] || "-",
-      motorise: extracted["motorise"] || "-",
-      pretentionsSalariales: extracted["pretentionsSalariales"] || "-",
-      questionsRemarques: extracted["questionsRemarques"] || "-",
-      "Votre niveau de l'anglais technique": englishLevel, // ✅ JS wins
+      Prenom: extracted["Prenom"] || extracted["Prénom"] || "-",
     };
-
-    return result;
   } catch (err) {
-    console.error("❌ Ollama extraction failed:", err.message);
+    console.error("Ollama name extraction failed:", err.message);
     throw err;
   }
 }
 
-// POST /extract - Upload and extract CV (note: no /api prefix here, it's added in app.js)
-router.post("/extract", uploadCv.single("cv"), async (req, res) => {
+// POST / - Upload and extract CV (async)
+router.post("/", uploadCv.single("cv"), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -281,7 +150,7 @@ router.post("/extract", uploadCv.single("cv"), async (req, res) => {
       });
     }
 
-    console.log("📄 Processing CV:", req.file.originalname);
+    console.log(" Processing CV:", req.file.originalname);
     const encodedOriginalname = encodeURIComponent(req.file.originalname);
 
     // Upload to MinIO
@@ -294,26 +163,58 @@ router.post("/extract", uploadCv.single("cv"), async (req, res) => {
       { "Content-Type": "application/pdf" },
     );
 
-    console.log("✅ CV uploaded to MinIO:", fileName);
+    console.log(" CV uploaded to MinIO:", fileName);
 
-    // Parse PDF
-    const pdfData = await pdf(req.file.buffer);
-    const pdfText = pdfData.text;
+    const jobId = `${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+    extractionJobs.set(jobId, {
+      status: "processing",
+      error: null,
+      data: null,
+      fileName,
+      createdAt: Date.now(),
+    });
 
-    console.log("✅ PDF parsed, text length:", pdfText.length);
+    setImmediate(async () => {
+      try {
+        const pdfData = await pdf(req.file.buffer);
+        const pdfText = pdfData.text || "";
+        const headText = pdfText.slice(0, 2000);
+        const extractedData = await extractNameWithOllama(headText);
+        const cvUrl = `${process.env.MINIO_PUBLIC_URL}/${CV_BUCKET}/${fileName}`;
 
-    // Extract with Ollama
-    console.log("🤖 Calling Ollama...");
-    const extractedData = await extractWithOllama(pdfText);
+        const db = getDB();
+        const archiveDoc = {
+          Nom: extractedData.Nom || "",
+          Prenom: extractedData.Prenom || "",
+          service: "",
+          cvUrl,
+          createdAt: new Date(),
+        };
+        const result = await db.collection("archive").insertOne(archiveDoc);
 
-    console.log("🔗 MINIO_PUBLIC_URL:", process.env.MINIO_PUBLIC_URL);
-    const cvUrl = `${process.env.MINIO_PUBLIC_URL}/${CV_BUCKET}/${fileName}`;
+        extractionJobs.set(jobId, {
+          status: "done",
+          error: null,
+          data: { _id: result.insertedId, ...archiveDoc },
+          fileName,
+          cvUrl,
+          createdAt: Date.now(),
+        });
+      } catch (err) {
+        extractionJobs.set(jobId, {
+          status: "error",
+          error: err.code || err.message || "Extraction failed",
+          data: null,
+          fileName,
+          createdAt: Date.now(),
+        });
+      }
+    });
+
     res.json({
       success: true,
-      data: extractedData,
-      fileName: fileName,
-      cvUrl: cvUrl,
-      pdfText: pdfText.substring(0, 500), // First 500 chars for preview
+      jobId,
+      message: "Extraction started",
     });
   } catch (error) {
     console.error("Error processing CV:", error);
@@ -340,6 +241,16 @@ router.post("/extract", uploadCv.single("cv"), async (req, res) => {
   }
 });
 
+// GET /status/:id - Check extraction status
+router.get("/status/:id", async (req, res) => {
+  const { id } = req.params;
+  const job = extractionJobs.get(id);
+  if (!job) {
+    return res.status(404).json({ success: false, error: "Job not found" });
+  }
+  res.json({ success: true, ...job });
+});
+
 // POST /upload-only-cv - Uploads a CV file to MinIO without extraction
 router.post("/upload-only-cv", uploadCv.single("cv"), async (req, res) => {
   try {
@@ -363,6 +274,7 @@ router.post("/upload-only-cv", uploadCv.single("cv"), async (req, res) => {
     );
 
     const cvUrl = `${process.env.MINIO_PUBLIC_URL}/${CV_BUCKET}/${fileName}`;
+
     res.json({
       success: true,
       message: "CV file uploaded successfully",

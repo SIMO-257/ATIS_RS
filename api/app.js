@@ -9,6 +9,7 @@ const formRoutes = require('./Routes/formRoutes');
 const hiringRoutes = require('./Routes/hiringRoutes');
 const refusedRoutes = require('./Routes/refusedRoutes'); // New
 const departRoutes = require('./Routes/departRoutes');   // New
+const archiveRoutes = require('./Routes/archiveRoutes');
 const path = require('path');
 
 const app = express();
@@ -31,6 +32,7 @@ app.use('/api/forms', formRoutes);
 app.use('/api/hiring', hiringRoutes);
 app.use('/api/refused', refusedRoutes); // New
 app.use('/api/depart', departRoutes);     // New
+app.use('/api/archive', archiveRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

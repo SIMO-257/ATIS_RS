@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import "../styles/CVExtractor.css"; // Reusing existing styles for consistency
 
-import { API_URL, FRONTEND_URL } from "../config";
+import { API_URL } from "../config";
 
 function normalizeId(id) {
   if (typeof id === "string") return id;
@@ -24,6 +24,8 @@ const CandidatesList = () => {
 
   useEffect(() => {
     fetchCandidates();
+    const intervalId = setInterval(fetchCandidates, 3000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchCandidates = async () => {
@@ -85,35 +87,37 @@ const CandidatesList = () => {
     }
   };
 
-  const handleEnableForm = async (id) => {
+  const handleForm2Upload = async (event, id) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("form2File", file);
+
     try {
       const _id = normalizeId(id);
-      const response = await fetch(`${API_URL}/candidates/${_id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ formStatus: "active" }),
-      });
+      const response = await fetch(
+        `${API_URL}/candidates/${_id}/upload-form2`,
+        {
+          method: "POST",
+          body: formData,
+        },
+      );
       const data = await response.json();
       if (data.success) {
-        const updatedCandidate = data.data;
         setCandidates((prev) =>
-          prev.map((c) => (normalizeId(c._id) === _id ? updatedCandidate : c)),
+          prev.map((c) =>
+            normalizeId(c._id) === _id
+              ? { ...c, qualifiedFormPath: data.filePath }
+              : c,
+          ),
         );
-        const link = `${FRONTEND_URL}/form/${updatedCandidate.formToken}`;
-        try {
-          await navigator.clipboard.writeText(link);
-          alert(
-            `🚀 Formulaire activé. Lien copié dans le presse‑papier :\n\n${link}`,
-          );
-          // Open the form in a new tab so the admin stays on the list page
-          window.open(link, "_blank");
-        } catch {
-          alert(`🚀 Formulaire activé. Lien : ${link}`);
-          window.open(link, "_blank");
-        }
+      } else {
+        alert(data.error || "Failed to upload Form 2.");
       }
     } catch (err) {
-      console.error("Failed to enable form", err);
+      console.error("Error uploading Form 2", err);
+      alert("Error uploading Form 2.");
     }
   };
 
@@ -209,7 +213,6 @@ const CandidatesList = () => {
                 <th>Statut</th>
                 <th>État d'embauche</th>
                 <th>CV Original</th>
-                <th>Formulaire</th>
                 <th>Form_2</th>
                 <th>Actions</th>
               </tr>
@@ -218,7 +221,7 @@ const CandidatesList = () => {
               {activeCandidates.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="15"
+                    colSpan="17"
                     style={{ textAlign: "center", padding: "2rem" }}
                   >
                     Aucun candidat en attente ou accepté
@@ -382,25 +385,11 @@ const CandidatesList = () => {
                         )}
                       </td>
                       <td>
-                        <button
-                          onClick={() => handleEnableForm(candidate._id)}
-                          className="extract-button"
-                          style={{
-                            padding: "8px 12px",
-                            fontSize: "0.85rem",
-                            background:
-                              candidate.formStatus === "active"
-                                ? "#48bb78"
-                                : "",
-                          }}
-                          disabled={candidate.formStatus === "active"}
-                        >
-                          {candidate.formStatus === "active"
-                            ? "✅ Activé"
-                            : "📋 Choisir"}
-                        </button>
-                      </td>
-                      <td>
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleForm2Upload(e, candidate._id)}
+                        />
                         {candidate.qualifiedFormPath ? (
                           <a
                             href={candidate.qualifiedFormPath}

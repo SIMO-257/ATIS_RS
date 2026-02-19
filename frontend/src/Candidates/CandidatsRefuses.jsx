@@ -11,6 +11,8 @@ const CandidatsRefuses = () => {
 
   useEffect(() => {
     fetchCandidates();
+    const intervalId = setInterval(fetchCandidates, 3000);
+    return () => clearInterval(intervalId);
   }, []);
 
   const fetchCandidates = async () => {
