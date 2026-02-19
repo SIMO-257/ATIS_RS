@@ -1,9 +1,25 @@
 .form3-wrapper {
   min-height: 100vh;
   background: linear-gradient(140deg, #f1f5f9 0%, #e2e8f0 50%, #f8fafc 100%);
-  padding: 32px 16px 60px;
+  padding: 32px 8px 60px;
   font-family: "Inter", system-ui, sans-serif;
   color: #1f2933;
+}
+
+@media (min-width: 900px) {
+  .form3-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .form3-header,
+  .form3-form {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 .form3-header {

@@ -74,6 +74,58 @@ const ChoisirBesoin = () => {
     }
   };
 
+  const buildEmailFormLink = () => {
+    if (!generatedLink) return "";
+    try {
+      const url = new URL(generatedLink);
+      if (service) {
+        url.searchParams.set("poste", service);
+      }
+      return url.toString();
+    } catch {
+      return generatedLink;
+    }
+  };
+
+  const buildEmailTemplate = () => {
+    const emailService = service || "{{service_choisi}}";
+    const emailLink =
+      buildEmailFormLink() || "https://…?poste={{service_choisi}}";
+    return {
+      subject: `Première Étape de Votre Candidature Poste de ${emailService}`,
+      body: `Bonjour,
+
+Nous vous remercions de l'intérêt que vous portez au poste de ${emailService} au sein de ATIS (APPROVISIONNEUR TECHNIQUE INTERNATIONAL SA). Votre profil a retenu notre attention et nous souhaitons donner suite à votre candidature.
+
+Dans le cadre de notre processus de recrutement, nous vous invitons à compléter un court formulaire en ligne. Celui-ci nous permettra de mieux cerner votre parcours et de préparer au mieux notre échange à venir.
+
+Veuillez remplir le formulaire ici : ${emailLink}
+
+Nous nous réjouissons d'en apprendre davantage sur vous !
+
+Cordialement,
+Service RH
+ATIS
+na.loulida@approvisionneur.com`,
+    };
+  };
+
+  const buildGmailComposeLink = () => {
+    const { subject, body } = buildEmailTemplate();
+    const params = new URLSearchParams({
+      view: "cm",
+      fs: "1",
+      su: subject,
+      body,
+    });
+    return `https://mail.google.com/mail/?${params.toString()}`;
+  };
+
+  const handleOpenGmail = () => {
+    const gmailLink = buildGmailComposeLink();
+    window.open(gmailLink, "_blank");
+  };
+
   return (
     <div className="cv-extractor-container">
       <div className="cv-extractor-card single-panel">
@@ -147,6 +199,9 @@ const ChoisirBesoin = () => {
               <div className="form-actions">
                 <button onClick={handleCopy} className="copy-button">
                   {copySuccess || "Copier le lien"}
+                </button>
+                <button onClick={handleOpenGmail} className="copy-button">
+                  Ouvrir Gmail
                 </button>
               </div>
             </div>
