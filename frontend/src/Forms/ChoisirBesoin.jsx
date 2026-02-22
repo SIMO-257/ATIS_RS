@@ -127,7 +127,7 @@ na.loulida@approvisionneur.com`,
   };
 
   return (
-    <div className="cv-extractor-container">
+    <div className="cv-extractor-container choisir-besoin-page">
       <div className="cv-extractor-card single-panel">
         <div className="form-panel">
           <div className="form-header">

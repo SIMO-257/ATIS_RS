@@ -23,10 +23,11 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const db = getDB();
-    const { Nom, Prenom, service, cvUrl } = req.body || {};
+    const { Nom, Prenom, Email, service, cvUrl } = req.body || {};
     const doc = {
       Nom: Nom || "",
       Prenom: Prenom || "",
+      Email: Email || "",
       service: service || "",
       cvUrl: cvUrl || "",
       createdAt: new Date(),

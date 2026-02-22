@@ -1,126 +1,207 @@
+/* ============================================================
+   Candidate Form — Dark Editorial Redesign
+   Aesthetic: Luxury / Refined / Editorial
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&display=swap');
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 :root {
-  --bg-a: #f9faf7;
-  --bg-b: #eff2ea;
-  --card: #ffffff;
-  --ink: #1f2937;
-  --muted: #6b7280;
-  --line: #d7e0d0;
-  --line-soft: #e7ece2;
-  --field: #f8fbf5;
-  --field-focus: #ffffff;
-  --accent: #2f7a4f;
-  --accent-2: #1f5f3a;
-  --danger: #c82f42;
+  --bg:        #eef0f8;
+  --surface:   #f5f6fc;
+  --card:      #ffffff;
+  --border:    #d0d4f0;
+  --border-hi: #8a8fd4;
+  --text:      #1e1b4b;
+  --muted:     #6366a0;
+  --dim:       #a5a8cc;
+  --accent:    #5b5bd6;
+  --accent-lo: rgba(91, 91, 214, 0.10);
+  --accent-hi: #7c7cf0;
+  --danger:    #dc2626;
+  --danger-lo: rgba(220, 38, 38, 0.08);
+  --field:     #ffffff;
+  --glow:      rgba(91, 91, 214, 0.18);
+
+  --radius-sm: 6px;
+  --radius:    10px;
+  --radius-lg: 16px;
+  --transition: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'DM Sans', 'Helvetica Neue', sans-serif;
 }
 
+/* ── Scrollbar ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: #b0b4e0; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Page shell ─────────────────────────────────────────────── */
 .candidate-form-container {
+  min-height: 100vh;
+  width: 100%;
+  padding: 48px 20px 72px;
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  min-height: 100vh;
-  width: 100%;
-  padding: 36px clamp(16px, 3vw, 32px);
-  background:
-    radial-gradient(circle at 15% 10%, #ffffff 0%, transparent 40%),
-    linear-gradient(150deg, var(--bg-a), var(--bg-b));
-  font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
-  overflow-x: hidden;
+  background: var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(91,91,214,0.10) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c7caee' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
 }
 
+/* ── Card ────────────────────────────────────────────────────── */
 .candidate-form-card {
-  width: min(100%, 980px);
-  max-width: 980px;
-  margin-inline: auto;
+  width: 100%;
+  max-width: 960px;
   background: var(--card);
-  border: 1px solid var(--line-soft);
-  border-radius: 14px;
-  box-shadow: 0 14px 36px rgba(26, 39, 30, 0.1);
-  padding: 28px;
-  animation: fadeIn 0.35s ease-out;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 0 0;
+  box-shadow:
+    0 0 0 1px rgba(91,91,214,0.06) inset,
+    0 20px 60px rgba(91,91,214,0.08),
+    0 4px 16px rgba(0,0,0,0.06);
+  animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 
 .candidate-form-card.thank-you-card {
-  max-width: 620px;
+  max-width: 560px;
   text-align: center;
-  padding: 54px 40px;
+  padding: 64px 48px;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
 }
 
+/* ── Header ──────────────────────────────────────────────────── */
 .form-header-section {
   text-align: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--line-soft);
+  margin-bottom: 0;
+  padding: 0 40px 28px;
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+
+.form-header-section::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 99px;
 }
 
 .form-header-section h1 {
-  margin: 0 0 8px;
-  font-size: 27px;
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--text);
+  margin-bottom: 8px;
   line-height: 1.2;
-  color: var(--ink);
 }
 
 .form-header-section p {
-  margin: 0;
   color: var(--muted);
   font-size: 14px;
+  font-weight: 300;
+  letter-spacing: 0.3px;
 }
 
+/* ── Error banner ─────────────────────────────────────────────── */
 .error-banner {
-  background: #fff3f5;
-  border: 1px solid #f3c3cb;
+  background: var(--danger-lo);
+  border: 1px solid rgba(220, 38, 38, 0.25);
   color: var(--danger);
-  padding: 10px 12px;
-  border-radius: 10px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
   font-size: 13px;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  letter-spacing: 0.2px;
 }
 
+/* ── Form layout ─────────────────────────────────────────────── */
 .candidate-form {
   display: flex;
   flex-direction: column;
+  gap: 0;
+  background: transparent;
+  margin: 0;
+}
+
+.candidate-form-card > form.candidate-form {
+  width: 100%;
+  max-width: none;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
 }
 
 .form-sections {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
 }
 
+/* ── Section ─────────────────────────────────────────────────── */
 .form-section {
-  background: linear-gradient(180deg, #fbfdf9, #f5f8f1);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 18px;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  padding: 20px 40px 12px;
+}
+
+.form-section:last-child {
+  border-bottom-left-radius: var(--radius-lg);
+  border-bottom-right-radius: var(--radius-lg);
+  padding-bottom: 28px;
 }
 
 .section-title {
-  margin: 0 0 14px;
-  font-size: 17px;
+  font-family: var(--font-display);
+  font-size: 15px;
   font-weight: 700;
-  color: #21362b;
+  color: var(--accent);
+  letter-spacing: 0.4px;
+  margin-bottom: 18px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
 }
 
+.section-title::before {
+  content: '';
+  display: inline-block;
+  width: 3px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 99px;
+  flex-shrink: 0;
+}
+
+/* ── Rows & fields ───────────────────────────────────────────── */
 .form-row {
   display: flex;
   flex-wrap: wrap;
@@ -130,23 +211,41 @@
 
 .form-row > .form-field {
   flex: 1 1 calc(50% - 7px);
-  min-width: 240px;
+  min-width: 220px;
+}
+
+.form-row > .form-field:only-child {
+  flex: 1 1 100%;
+  max-width: 100%;
 }
 
 .form-field {
-  margin-bottom: 8px;
-  position: relative;
+  margin-bottom: 10px;
 }
 
+.form-section .form-field:last-child,
+.form-section .form-row:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Labels ──────────────────────────────────────────────────── */
 .field-label,
 .form-field label {
   display: block;
-  margin-bottom: 6px;
-  font-size: 13px;
+  margin-bottom: 7px;
+  font-size: 11px;
   font-weight: 600;
-  color: #324739;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
+.required {
+  color: var(--accent);
+  margin-left: 3px;
+}
+
+/* ── Inputs ──────────────────────────────────────────────────── */
 .field-input,
 .field-select,
 .form-field input[type="text"],
@@ -156,191 +255,319 @@
 .form-field select,
 .form-field textarea {
   width: 100%;
-  padding: 9px 11px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
+  padding: 11px 14px;
   background: var(--field);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
   font-size: 14px;
-  color: var(--ink);
-  font-family: inherit;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+  font-family: var(--font-body);
+  font-weight: 400;
+  color: var(--text);
+  transition:
+    border-color var(--transition),
+    box-shadow var(--transition),
+    background var(--transition);
+  appearance: none;
+  -webkit-appearance: none;
 }
 
+.field-input::placeholder,
+.form-field input::placeholder,
+.form-field textarea::placeholder {
+  color: var(--dim);
+}
+
+/* Date input calendar icon tint */
+.form-field input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.3) sepia(1) saturate(2) hue-rotate(220deg);
+  opacity: 0.6;
+  cursor: pointer;
+}
+
+/* ── Focus ───────────────────────────────────────────────────── */
 .field-input:focus,
 .field-select:focus,
 .form-field input:focus,
 .form-field select:focus,
 .form-field textarea:focus {
   outline: none;
-  border-color: #7aa38a;
-  background: var(--field-focus);
-  box-shadow: 0 0 0 3px rgba(47, 122, 79, 0.14);
+  border-color: var(--accent);
+  background: #ffffff;
+  box-shadow: 0 0 0 3px var(--glow), 0 0 16px rgba(201,106,58,0.08);
 }
 
-.required {
-  color: var(--danger);
-  margin-left: 4px;
-}
-
+/* ── Error state ─────────────────────────────────────────────── */
 .form-field.error .field-input,
 .form-field.error .field-select,
 .form-field.error input,
 .form-field.error select,
 .form-field.error textarea {
   border-color: var(--danger);
-  background: #fff7f8;
+  background: var(--danger-lo);
 }
 
 .error-text {
-  color: var(--danger);
   display: block;
-  margin-top: 4px;
-  font-size: 12px;
+  margin-top: 5px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  color: var(--danger);
 }
 
-.english-level-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-  gap: 12px;
-}
-
+/* ── Select arrow ────────────────────────────────────────────── */
 .custom-select-wrapper {
   position: relative;
 }
 
 .field-select,
 .form-field select {
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background-image: url('data:image/svg+xml;utf8,<svg fill="%23324739" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236366a0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 18px;
-  padding-right: 34px;
+  background-position: right 12px center;
+  background-size: 16px;
+  padding-right: 36px;
 }
 
+/* ── English level grid ──────────────────────────────────────── */
+.english-level-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+}
+
+/* ── CV Upload ───────────────────────────────────────────────── */
 .cv-upload-field {
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .cv-label {
   display: block;
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 600;
-  color: #324739;
-  margin-bottom: 6px;
+  letter-spacing: 0.9px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 8px;
 }
 
 .cv-upload-wrapper {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 14px;
 }
 
 .hidden-file-input {
   display: none;
 }
 
+/* Style native file input as fallback */
+.candidate-form-container input[type="file"] {
+  font-family: var(--font-body);
+  font-size: 13px;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0;
+  border: none;
+  background: transparent;
+  width: 100%;
+}
+
+.candidate-form-container input[type="file"]::file-selector-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 18px;
+  margin-right: 14px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-lo);
+  color: var(--accent);
+  font-family: var(--font-body);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  cursor: pointer;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.candidate-form-container input[type="file"]::file-selector-button:hover {
+  background: rgba(91, 91, 214, 0.18);
+  border-color: var(--accent-hi);
+  box-shadow: 0 0 14px rgba(91, 91, 214, 0.12);
+}
+
 .cv-upload-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 8px 12px;
-  border: 1px solid #2d8a55;
-  border-radius: 9px;
-  background: #ecf7ef;
-  color: #1e5f3b;
+  gap: 7px;
+  padding: 10px 18px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent-lo);
+  color: var(--accent-hi);
+  font-family: var(--font-body);
   font-size: 13px;
-  font-weight: 700;
+  font-weight: 600;
+  letter-spacing: 0.3px;
   cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition:
+    background var(--transition),
+    border-color var(--transition),
+    color var(--transition),
+    box-shadow var(--transition);
+  white-space: nowrap;
 }
 
 .cv-upload-btn:hover {
-  background: #dff1e5;
-  border-color: #1f6d42;
+  background: rgba(91,91,214,0.18);
+  border-color: var(--accent-hi);
+  color: #4040c0;
+  box-shadow: 0 0 14px rgba(91,91,214,0.12);
 }
 
 .cv-file-name {
   font-size: 12px;
-  color: var(--muted);
+  color: var(--dim);
+  font-style: italic;
 }
 
 .cv-upload-field.required-empty .cv-upload-btn {
   border-color: var(--danger);
+  color: var(--danger);
+  background: var(--danger-lo);
 }
 
+/* ── Submit section ──────────────────────────────────────────── */
 .form-submit-section {
-  margin-top: 20px;
-  text-align: center;
+  margin-top: 0;
+  padding: 24px 40px 36px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
 }
 
 .submit-form-btn {
-  border: 0;
-  border-radius: 10px;
-  padding: 11px 24px;
-  background: linear-gradient(180deg, var(--accent), var(--accent-2));
+  border: none;
+  border-radius: var(--radius);
+  padding: 14px 40px;
+  background: linear-gradient(135deg, var(--accent) 0%, #4040c0 100%);
   color: #fff;
-  font-size: 14px;
-  font-weight: 700;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   cursor: pointer;
-  transition: filter 0.15s ease, transform 0.15s ease;
+  position: relative;
+  overflow: hidden;
+  transition:
+    transform var(--transition),
+    box-shadow var(--transition),
+    opacity var(--transition);
+  box-shadow: 0 4px 20px rgba(91,91,214,0.30), 0 0 0 1px rgba(255,255,255,0.15) inset;
+}
+
+.submit-form-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
 }
 
 .submit-form-btn:hover:not(:disabled) {
-  filter: brightness(1.05);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(91,91,214,0.40), 0 0 0 1px rgba(255,255,255,0.18) inset;
+}
+
+.submit-form-btn:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .submit-form-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.45;
   cursor: not-allowed;
-  transform: none;
 }
 
+/* ── Spinner ─────────────────────────────────────────────────── */
 .btn-spinner {
+  display: inline-block;
   width: 14px;
   height: 14px;
-  margin-right: 6px;
+  margin-right: 8px;
   vertical-align: middle;
-  display: inline-block;
-  border: 2px solid rgba(255, 255, 255, 0.32);
-  border-top: 2px solid #ffffff;
+  border: 2px solid rgba(255,255,255,0.25);
+  border-top-color: #ffffff;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  animation: spin 0.7s linear infinite;
 }
 
 .required-note {
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.2px;
 }
 
+/* ── Thank-you state ─────────────────────────────────────────── */
 .thank-you-icon {
   display: block;
-  font-size: 46px;
-  margin-bottom: 12px;
+  font-size: 54px;
+  margin-bottom: 16px;
+  animation: iconPop 0.5s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+@keyframes iconPop {
+  from { transform: scale(0.4); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.thank-you-card h1 {
+  font-family: var(--font-display);
+  font-size: 30px;
 }
 
 .thank-you-subtitle {
   margin-top: 14px;
   color: var(--muted);
+  font-weight: 300;
+  line-height: 1.6;
 }
 
+/* ── Spin keyframe ───────────────────────────────────────────── */
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+  to { transform: rotate(360deg); }
 }
 
+/* ── Responsive ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .candidate-form-container {
-    padding: 22px 12px;
+    padding: 24px 14px 48px;
   }
 
   .candidate-form-card {
-    padding: 18px;
+    padding: 24px 0 0;
+  }
+
+  .form-header-section {
+    padding: 0 20px 24px;
+  }
+
+  .form-header-section h1 {
+    font-size: 26px;
+  }
+
+  .form-section {
+    padding: 18px 20px;
+  }
+
+  .form-submit-section {
+    padding: 20px 20px 28px;
   }
 
   .form-row > .form-field {
@@ -351,5 +578,10 @@
   .cv-upload-wrapper {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .submit-form-btn {
+    width: 100%;
+    padding: 14px 24px;
   }
 }

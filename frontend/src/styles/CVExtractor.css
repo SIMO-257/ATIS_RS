@@ -27,6 +27,13 @@
   padding: 40px;
 }
 
+.choisir-besoin-page .cv-extractor-card.single-panel {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(148, 163, 184, 0.35);
+  border-radius: 18px;
+  box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+}
+
 .upload-panel,
 .form-panel {
   flex: 1;
@@ -162,6 +169,10 @@
   flex: 1;
   background-color: transparent;
   padding: 30px;
+}
+
+.choisir-besoin-page .form-panel .form-header h2 {
+  color: #1f2a44;
 }
 
 .form-panel .form-header {

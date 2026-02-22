@@ -10,6 +10,7 @@ const CVExtractor = () => {
   const [cvData, setCvData] = useState({
     Nom: "",
     Prenom: "",
+    Email: "",
     cvUrl: "",
   });
   const [extractionDone, setExtractionDone] = useState(false);
@@ -101,6 +102,7 @@ const CVExtractor = () => {
             setCvData({
               Nom: result.data?.Nom || "",
               Prenom: result.data?.Prenom || "",
+              Email: result.data?.Email || "",
               cvUrl: result.cvUrl || result.data?.cvUrl || "",
             });
             setExtractionDone(true);
@@ -138,7 +140,7 @@ const CVExtractor = () => {
     setFile(null);
     setExtractionDone(false);
     setError(null);
-    setCvData({ Nom: "", Prenom: "", cvUrl: "" });
+    setCvData({ Nom: "", Prenom: "", Email: "", cvUrl: "" });
   };
 
 
@@ -216,7 +218,7 @@ const CVExtractor = () => {
             <div
               style={{
                 display: "grid",
-                gridTemplateColumns: "1fr 1fr",
+                gridTemplateColumns: "repeat(3, 1fr)",
                 gap: "16px",
                 marginTop: "10px",
               }}
@@ -245,6 +247,19 @@ const CVExtractor = () => {
                 <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Prenom</div>
                 <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1f2937" }}>
                   {cvData.Prenom || "-"}
+                </div>
+              </div>
+              <div
+                style={{
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  borderRadius: "12px",
+                  padding: "16px",
+                }}
+              >
+                <div style={{ fontSize: "0.85rem", color: "#64748b" }}>Email</div>
+                <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#1f2937" }}>
+                  {cvData.Email || "-"}
                 </div>
               </div>
               <div

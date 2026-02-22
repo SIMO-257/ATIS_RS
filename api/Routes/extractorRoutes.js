@@ -85,13 +85,21 @@ const ollama = axios.create({
   timeout: 300000, // 5 minutes
 });
 
-// Extract candidate name using Ollama
+const EMAIL_REGEX = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i;
+
+const extractEmailFromText = (text) => {
+  if (!text) return "-";
+  const match = text.match(EMAIL_REGEX);
+  return match ? match[0] : "-";
+};
+
+// Extract candidate name + email using Ollama
 async function extractNameWithOllama(pdfText) {
   try {
     const prompt = `You are a STRICT data extraction engine.
 
 ABSOLUTE RULES:
-- Extract ONLY the candidate's name.
+- Extract ONLY the candidate's name and email.
 - DO NOT infer, guess, normalize, or harmonize values.
 - If a field is empty, unclear, or ambiguous, return "-".
 - Output VALID JSON ONLY.
@@ -100,7 +108,8 @@ ABSOLUTE RULES:
 JSON FORMAT (must match EXACTLY):
 {
   "Nom": "string",
-  "Prenom": "string"
+  "Prenom": "string",
+  "Email": "string"
 }
 
 DOCUMENT TEXT:
@@ -133,6 +142,7 @@ JSON:`;
     return {
       Nom: extracted["Nom"] || "-",
       Prenom: extracted["Prenom"] || extracted["Prénom"] || "-",
+      Email: extracted["Email"] || extracted["email"] || "-",
     };
   } catch (err) {
     console.error("Ollama name extraction failed:", err.message);
@@ -180,12 +190,18 @@ router.post("/", uploadCv.single("cv"), async (req, res) => {
         const pdfText = pdfData.text || "";
         const headText = pdfText.slice(0, 2000);
         const extractedData = await extractNameWithOllama(headText);
+        const fallbackEmail = extractEmailFromText(pdfText);
+        const email =
+          extractedData.Email && extractedData.Email !== "-"
+            ? extractedData.Email
+            : fallbackEmail;
         const cvUrl = `${process.env.MINIO_PUBLIC_URL}/${CV_BUCKET}/${fileName}`;
 
         const db = getDB();
         const archiveDoc = {
           Nom: extractedData.Nom || "",
           Prenom: extractedData.Prenom || "",
+          Email: email || "",
           service: "",
           cvUrl,
           createdAt: new Date(),

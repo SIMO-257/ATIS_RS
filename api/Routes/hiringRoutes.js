@@ -219,12 +219,12 @@ router.post(
   },
 );
 
-// NEW ROUTES for 'emabauchés' collection
+// NEW ROUTES for 'emabauch\u00e9s' collection
 // GET /api/hiring/embauches - Get all hired candidates
 router.get('/embauches', async (req, res) => {
     try {
         const db = getDB();
-        const embauches = await db.collection('emabauchés').find({}).toArray();
+        const embauches = await db.collection('emabauch\u00e9s').find({}).toArray();
         res.json({ success: true, count: embauches.length, data: embauches });
     } catch (error) {
         console.error('Error fetching hired candidates:', error);
@@ -239,7 +239,7 @@ router.post('/embauches', async (req, res) => {
         const newEmbauche = req.body;
         // Optionally add a timestamp or other fields
         newEmbauche.hiredAt = new Date();
-        const result = await db.collection('emabauchés').insertOne(newEmbauche);
+        const result = await db.collection('emabauch\u00e9s').insertOne(newEmbauche);
         res.status(201).json({ success: true, message: 'Hired candidate added successfully', data: { id: result.insertedId, ...newEmbauche } });
     } catch (error) {
         console.error('Error adding hired candidate:', error);

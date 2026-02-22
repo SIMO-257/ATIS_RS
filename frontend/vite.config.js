@@ -8,7 +8,7 @@ export default defineConfig({
     host: true,
     port: 5173,
     strictPort: true,
-    allowedHosts: ['.trycloudflare.com'],
+    allowedHosts: ['.trycloudflare.com', '.ngrok-free.dev', 'evonne-unradical-jingly.ngrok-free.dev'],
     proxy: {
       '/api': {
         target: 'http://api:5000',

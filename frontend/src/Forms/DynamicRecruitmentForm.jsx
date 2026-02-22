@@ -959,7 +959,7 @@ const DynamicRecruitmentForm = () => {
               cursor: "pointer",
             }}
           >
-            {loading ? "Chargement..." : "✅ Soumettre mon Profil"}
+            {loading ? "Chargement..." : "Soumettre mon Profil"}
           </button>
         </form>
       </div>

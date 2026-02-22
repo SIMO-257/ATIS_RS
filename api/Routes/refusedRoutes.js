@@ -7,7 +7,7 @@ const { ObjectId } = require('mongodb');
 router.get('/', async (req, res) => {
     try {
         const db = getDB();
-        const refusedCandidates = await db.collection('refusés').find({}).toArray();
+        const refusedCandidates = await db.collection('refus\u00e9s').find({}).toArray();
         res.json({ success: true, count: refusedCandidates.length, data: refusedCandidates });
     } catch (error) {
         console.error('Error fetching refused candidates:', error);
@@ -22,7 +22,7 @@ router.post('/', async (req, res) => {
         const newRefusedCandidate = req.body;
         // Optionally add a timestamp or other fields
         newRefusedCandidate.refusedAt = new Date();
-        const result = await db.collection('refusés').insertOne(newRefusedCandidate);
+        const result = await db.collection('refus\u00e9s').insertOne(newRefusedCandidate);
         res.status(201).json({ success: true, message: 'Refused candidate added successfully', data: { id: result.insertedId, ...newRefusedCandidate } });
     } catch (error) {
         console.error('Error adding refused candidate:', error);

@@ -34,7 +34,8 @@
     font-weight: 400;
 }
 
-form {
+.evaluation-container form,
+.correction-container form {
     width: 100%;
     max-width: 800px;
     background-color: #ffffff;

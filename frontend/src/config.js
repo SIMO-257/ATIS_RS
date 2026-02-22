@@ -1,9 +1,9 @@
 const getApiUrl = () => {
-  if (window.location.protocol === "https:") {
-    return "/api";
-  }
   if (import.meta.env.VITE_API_URL) {
     return import.meta.env.VITE_API_URL;
+  }
+  if (window.location.protocol === "https:") {
+    return "/api";
   }
   return "/api";
 };

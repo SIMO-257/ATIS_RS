@@ -87,12 +87,13 @@ na.loulida@approvisionneur.com`,
     };
   };
 
-  const openGmailCompose = (subject, body) => {
+  const openGmailCompose = (subject, body, to) => {
     const params = new URLSearchParams({
       view: "cm",
       fs: "1",
       su: subject,
       body,
+      ...(to ? { to } : {}),
     });
     window.open(`https://mail.google.com/mail/?${params.toString()}`, "_blank");
   };
@@ -118,7 +119,7 @@ na.loulida@approvisionneur.com`,
       }
       const fullLink = `${FRONTEND_URL}${data.formLink}`;
       const { subject, body } = buildEmailTemplate(item.service, fullLink);
-      openGmailCompose(subject, body);
+      openGmailCompose(subject, body, item.Email);
     } catch (err) {
       console.error("Transfer error:", err);
       alert("Erreur lors du transfert.");
@@ -145,6 +146,7 @@ na.loulida@approvisionneur.com`,
               <tr>
                 <th>Nom</th>
                 <th>Prenom</th>
+                <th>Email</th>
                 <th>Service</th>
                 <th>CV</th>
                 <th>Transferer</th>
@@ -155,7 +157,7 @@ na.loulida@approvisionneur.com`,
               {items.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="6"
+                    colSpan="7"
                     style={{ textAlign: "center", padding: "2rem" }}
                   >
                     Aucun archivage
@@ -168,6 +170,7 @@ na.loulida@approvisionneur.com`,
                     <td style={{ fontWeight: 600 }}>
                       {item.Prenom || item["Pr\u00e9nom"] || "-"}
                     </td>
+                    <td>{item.Email || "-"}</td>
                     <td>
                       <select
                         value={item.service || ""}
