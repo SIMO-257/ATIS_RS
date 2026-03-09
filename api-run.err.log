@@ -1,0 +1,512 @@
+localhost : Le terme ®localhost¯ n'est pas reconnu comme nom d'applet de commande, fonction, fichier de script ou 
+programme ex‚cutable. V‚rifiez l'orthographe du nom, ou si un chemin d'accŠs existe, v‚rifiez que le chemin d'accŠs 
+est correct et r‚essayez.
+Au caractŠre Ligne:1 : 17
++ $env:REDIS_HOST=localhost; $env:MINIO_ENDPOINT=localhost; $env:MINIO_ ...
++                 ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (localhost:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+localhost : Le terme ®localhost¯ n'est pas reconnu comme nom d'applet de commande, fonction, fichier de script ou 
+programme ex‚cutable. V‚rifiez l'orthographe du nom, ou si un chemin d'accŠs existe, v‚rifiez que le chemin d'accŠs 
+est correct et r‚essayez.
+Au caractŠre Ligne:1 : 48
++ $env:REDIS_HOST=localhost; $env:MINIO_ENDPOINT=localhost; $env:MINIO_ ...
++                                                ~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (localhost:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+http://localhost:9000 : Le terme ®http://localhost:9000¯ n'est pas reconnu comme nom d'applet de commande, fonction, 
+fichier de script ou programme ex‚cutable. V‚rifiez l'orthographe du nom, ou si un chemin d'accŠs existe, v‚rifiez que 
+le chemin d'accŠs est correct et r‚essayez.
+Au caractŠre Ligne:1 : 81
++ ... DPOINT=localhost; $env:MINIO_PUBLIC_URL=http://localhost:9000; node a ...
++                                             ~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (http://localhost:9000:String) [], CommandNotFoundException
+    + FullyQualifiedErrorId : CommandNotFoundException
+ 
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error checking bucket "cv-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form1-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form2-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form3-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "rapport-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "cv-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form1-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+BullMQ worker error: Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+Error checking bucket "form2-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form3-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+BullMQ worker error: Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+Error checking bucket "rapport-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "cv-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form1-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form2-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form3-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "rapport-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "cv-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form1-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+BullMQ worker error: Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+Error checking bucket "form2-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+Error checking bucket "form3-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+BullMQ worker error: Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+Error checking bucket "rapport-bucket": Error: getaddrinfo ENOTFOUND minio
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'minio'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: connect ETIMEDOUT
+    at Socket.<anonymous> (C:\GIT-Files\Questionnaire\api\node_modules\ioredis\built\Redis.js:171:41)
+    at Object.onceWrapper (node:events:632:28)
+    at Socket.emit (node:events:518:28)
+    at Socket._onTimeout (node:net:609:8)
+    at listOnTimeout (node:internal/timers:588:17)
+    at process.processTimers (node:internal/timers:523:7) {
+  errorno: 'ETIMEDOUT',
+  code: 'ETIMEDOUT',
+  syscall: 'connect'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:dns:122:26) {
+  errno: -3008,
+  code: 'ENOTFOUND',
+  syscall: 'getaddrinfo',
+  hostname: 'redis'
+}
+BullMQ worker error: Error: getaddrinfo ENOTFOUND redis
+    at GetAddrInfoReqWrap.onlookupall [as oncomplete] (node:d

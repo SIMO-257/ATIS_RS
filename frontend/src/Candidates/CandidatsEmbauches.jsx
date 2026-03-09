@@ -94,6 +94,31 @@ const CandidatsEmbauches = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this candidate?")) {
+      return;
+    }
+
+    try {
+      const _id = normalizeId(id);
+      const response = await fetch(`${API_URL}/candidates/${_id}`, {
+        method: "DELETE",
+      });
+      const data = await response.json();
+
+      if (data.success) {
+        setCandidates((prev) =>
+          prev.filter((candidate) => normalizeId(candidate._id) !== _id),
+        );
+      } else {
+        alert("Failed to delete candidate");
+      }
+    } catch (err) {
+      console.error("Delete error:", err);
+      alert("Error deleting candidate");
+    }
+  };
+
   const handleActivateEval = async (id) => {
     const candidate = id && typeof id === "object" ? id : null;
     const rawId = candidate && candidate._id ? candidate._id : id;
@@ -291,13 +316,14 @@ const CandidatsEmbauches = () => {
                 <th>Date de depart</th>
                 <th>Cause</th>
                 <th>Documents</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredCandidates.length === 0 ? (
                 <tr>
                   <td
-                    colSpan="15"
+                    colSpan="16"
                     style={{ textAlign: "center", padding: "2rem" }}
                   >
                     Aucun candidat ne correspond au filtre
@@ -554,6 +580,16 @@ const CandidatsEmbauches = () => {
                         aria-label="Documents"
                       >
                         {"\uD83D\uDCBE"}
+                      </button>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleDelete(candidate._id)}
+                        className="delete-btn"
+                        title="Supprimer"
+                        style={{ marginLeft: "10px" }}
+                      >
+                        {"\uD83D\uDDD1\uFE0F"}
                       </button>
                     </td>
                   </tr>
